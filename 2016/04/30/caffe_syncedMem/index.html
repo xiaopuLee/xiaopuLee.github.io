@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>sharp&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天来说说caffe中的底层类SyncedMemory
+首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。
+
+SyncedMemory的成员变量
+void* cpu_ptr_;
+void* gpu_ptr_;
+size_t size_;
+SyncedHead head_; //enum SyncedHead { UNINITIALIZED,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sharp's blog">
+<meta property="og:url" content="http://yoursite.com/2016/04/30/caffe_syncedMem/index.html">
+<meta property="og:site_name" content="sharp's blog">
+<meta property="og:description" content="今天来说说caffe中的底层类SyncedMemory
+首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。
+
+SyncedMemory的成员变量
+void* cpu_ptr_;
+void* gpu_ptr_;
+size_t size_;
+SyncedHead head_; //enum SyncedHead { UNINITIALIZED,">
+<meta property="og:updated_time" content="2016-04-30T15:13:37.400Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="sharp's blog">
+<meta name="twitter:description" content="今天来说说caffe中的底层类SyncedMemory
+首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。
+
+SyncedMemory的成员变量
+void* cpu_ptr_;
+void* gpu_ptr_;
+size_t size_;
+SyncedHead head_; //enum SyncedHead { UNINITIALIZED,">
+  
+    <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sharp&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">my life since 2015.12.19</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-caffe_syncedMem" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/caffe_syncedMem/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来说说caffe中的底层类SyncedMemory</p>
+<p>首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。</p>
+<ol>
+<li><p>SyncedMemory的成员变量</p>
+<p><code>void* cpu_ptr_;
+void* gpu_ptr_;
+size_t size_;
+SyncedHead head_; //enum SyncedHead { UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED };
+bool own_cpu_data_;
+bool cpu_malloc_use_cuda_;
+bool own_gpu_data_;
+int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变量的具体含义，尤其需要注意的是own_[c,g]pu<em>data</em>,这两个变量标示的是<br>如果相对应的[c,g]pu<em>ptr</em>指向的数据是通过malloc等方式申请的话，其值为true，通过set_方法赋值时（与别的变量共享），其值为false<br>从而在变量销毁的时候不会将共享数据的数据释放掉。<br>cpu_malloc_use<em>cuda</em> 变量标示的是在申请cpu内存的时候是否使用的是cuda的相应方法，使用cuda的方法能够申请得到pinned memory,是的<br>在多卡进行训练时候，提高数据copy的效率使得large models on multi-gpu 更加稳定。</p>
+</li>
+<li><p>SyncedMemory的成员函数<br>private 成员函数,<br><code>void to_cpu();
+ void to_gpu();</code><br>这俩函数是类内部函数，实现的是cpu和gpu数据的同步。值的注意的地方是在 在数据传输过程中，数据head_的更新。</p>
+<p>接口函数<br>`<br>const void<em> cpu_data();<br>void</em> mutable_cpu_data();<br>void set_cpu_data(void* data);</p>
+<p>const void<em> gpu_data();<br>void</em> mutable_gpu_data();<br>void set_gpu_data(void* data);</p>
+<p>size_t size();<br>SyncedHead head();<br>void async_gpu_push(const cudaStream_t&amp; stream);<br>`<br>很简易的接口，从名字就可以知道他们的作用。</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/caffe_syncedMem/" data-id="cinnage270006slxlsrjsmp2n" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/30/blog/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/30/plan/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title"></div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/30/cplusplus.string/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/caffe_blob/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/advancedGoogleTest/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/blas/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/boost_function/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 sharpL<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

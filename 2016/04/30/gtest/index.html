@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>sharp&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今儿来说说谷歌单元测试库gtest（备不住估计还得继续说说gmock，虽然我几分钟前才知道gmock)
+这里有一系列博客说gtest，并且说的很好。（http://www.cnblogs.com/coderzh/archive/2009/04/06/1426755.html）
+1 Basic concept  使用gtest首先得学会写断言（Assertions)。断言总是成对出现，会有EXPEC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sharp's blog">
+<meta property="og:url" content="http://yoursite.com/2016/04/30/gtest/index.html">
+<meta property="og:site_name" content="sharp's blog">
+<meta property="og:description" content="今儿来说说谷歌单元测试库gtest（备不住估计还得继续说说gmock，虽然我几分钟前才知道gmock)
+这里有一系列博客说gtest，并且说的很好。（http://www.cnblogs.com/coderzh/archive/2009/04/06/1426755.html）
+1 Basic concept  使用gtest首先得学会写断言（Assertions)。断言总是成对出现，会有EXPEC">
+<meta property="og:updated_time" content="2016-04-30T15:13:37.400Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="sharp's blog">
+<meta name="twitter:description" content="今儿来说说谷歌单元测试库gtest（备不住估计还得继续说说gmock，虽然我几分钟前才知道gmock)
+这里有一系列博客说gtest，并且说的很好。（http://www.cnblogs.com/coderzh/archive/2009/04/06/1426755.html）
+1 Basic concept  使用gtest首先得学会写断言（Assertions)。断言总是成对出现，会有EXPEC">
+  
+    <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sharp&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">my life since 2015.12.19</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-gtest" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/gtest/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今儿来说说谷歌单元测试库gtest<br>（备不住估计还得继续说说gmock，虽然我几分钟前才知道gmock)</p>
+<p>这里有一系列博客说gtest，并且说的很好。（<a href="http://www.cnblogs.com/coderzh/archive/2009/04/06/1426755.html）" target="_blank" rel="external">http://www.cnblogs.com/coderzh/archive/2009/04/06/1426755.html）</a></p>
+<p>1 Basic concept<br>  使用gtest首先得学会写断言（Assertions)。<br>断言总是成对出现，会有EXPECT<em>*版，也会有ASSERT</em>*版，前者会产生nonfatal错误并且继续运行，而后者会产生fatal error并且中断<br>程序。下举一小例。<br>　　`<br>  ASSERT_EQ(alpha.size(), beta.size()) &lt;&lt; “the sizes of alpha and beta are not equal”；</p>
+<p>  for(int id=0; id!=n; ++id)<br>  {<br>    EXPECT_EQ(a[i], b[i]) &lt;&lt; “array a, b not equal at: “ &lt;&lt; id;<br>　　}<br>  `</p>
+<p>  以下是所有的断言</p>
+<blockquote>
+<p>ASSERT_TRUE EXPECT_TRUE ASSERT_FALSE EXPECT_FALSE(condidtion)<br>　　&gt; ASSERT_EQ EXPECT_EQ (a, b)<br>ASSERT_NE EXPECT_NE<br>ASSERT_GT EXPECT_GT<br>ASSERT_LT EXPECT_LT<br>ASSERT_GE EXPECT_GE<br>ASSERT_LE EXPECT_LE</p>
+</blockquote>
+<p>　 &gt; ASSERT_STREQ EXPECT_STREQ</p>
+<blockquote>
+<p>ASSERT_STRCASEEQ EXPECT_STRCASEEQ<br>ASSERT_STRNE EXPECT_STRNE<br>ASSERT_STRCASEEQ EXPECT_STRCASENE<br>  上述a, b 必须是可比较的，可以是build-in type，也可以是自己创建的类型（当然提供可比较的方法）<br>  ASSERT_EQ可以用来对指针进行操作，例如当对比连个c string时候，他比较的是两个指针是否指向的是内存中的同一位置，而不知比较他们的值，<br>因此要比较两个c string的值，最好使用ASSERT_STREQ，而比较两个string，使用ASSERT_EQ即可。<br>2016/02以前，如×_EQ(expected, actual)描述的，两个参数一般是前边是期望值，后面是真实值。现在已经完全等同对待了</p>
+</blockquote>
+<p>  注意NULL 和空字符串是不同的。</p>
+<ol>
+<li><p>Simple Tests<br>使用宏TEST()来创建测试，如下main.cpp<br>　　`<br>#include<iostream><br>#include<gtest gtest.h=""></gtest></iostream></p>
+<p>int fib(int a, int b)<br>{<br> if(a &lt; b)</p>
+<pre><code>return -1;
+</code></pre><p> if(a == b)</p>
+<pre><code>return 0;
+</code></pre><p> if(a &gt; b)</p>
+<pre><code>return 1;
+</code></pre><p>}</p>
+<p>TEST(fib, handleAll)<br>{<br> EXPECT_EQ(fib(1, 2), -1);<br> EXPECT_EQ(fib(1, 1), 0);<br> EXPECT_EQ(fib(2, 1), 1);<br>}</p>
+<p>int main(int argc, char** argv)<br>{<br> testing::InitGoogleTest(&amp;argc, argv);<br> return RUN_ALL_TESTS();<br>}<br>`<br>使用g++ -Wall main.cpp -lgtest -lpthread 即可生成可执行程序。（gtest 和pthread 的顺序一定不能错）<br>　　TEST(test_case_name, test_name) {<br>　　　… test body …<br>　　　　}<br>　　中test_case_name, test_name 均是为了输出测试结果时候使用，不要加上引号。</p>
+</li>
+</ol>
+<p>3.Test Fixtures<br>  当我测试想测试自己写的类的时候，如果使用２中的步骤，那么我需要重复地创建类的对象并且做相应的初始化，这很繁琐。所幸gtest可让我们重复使用同一个<br>数据初始化。<br>　要完成这些，你需要首先实现一个类，这个类需要继承　::testing::Test, 然后在这个类中声明你需要的东西，如果有必要给这个类加上构造函数<br>或者在void SetUp()里面准备数据。注意这里的U是大写。以及相应的析构函数或者void TearDown()函数。</p>
+<p>　然后就可以仿照２中书写测试样例了，唯一区别的地方是这次使用的TEST_F(test_case_name, test_name)这个宏，并且这里的test_case_name一般得是<br>你的类名，<br>　如，我们这边有一个类实现的是队列<br>  <code>template &lt;typename E&gt; // E is the element type.
+   class Queue {
+    public:
+      Queue();
+      void Enqueue(const E&amp; element);
+      E* Dequeue(); // Returns NULL if the queue is empty.
+      size_t size() const;
+      ...
+   };</code><br>  然后定义FixtureTest<br> 　<code>class QueueTest : public ::test::Test
+  {
+     protected:
+        virtual void SetUp()
+        {
+           q0_.Enqueue(0);
+           q1_.Enqueue(1);
+          q2_.Enqueue(2);
+        }
+        //virtual void TearDown()
+        //{}
+    Queue&lt;int&gt; q0_;
+    Queue&lt;int&gt; q1_;
+    Queue&lt;int&gt; q2_;
+  }</code><br>　　然后就可以创建测试case了<br>　　`<br>   TEST_F(QueueTest, IsEmptyInitially) {<br>     EXPECT<em>EQ(0, q0</em>.size());<br>   }</p>
+<p>   TEST<em>F(QueueTest, DequeueWorks) {<br>     int* n = q0</em>.Dequeue();<br>     EXPECT_EQ(NULL, n);</p>
+<pre><code>n = q1_.Dequeue();
+ASSERT_TRUE(n != NULL);
+EXPECT_EQ(1, *n);
+EXPECT_EQ(0, q1_.size());
+delete n;
+
+n = q2_.Dequeue();
+ASSERT_TRUE(n != NULL);
+EXPECT_EQ(2, *n);
+EXPECT_EQ(1, q2_.size());
+delete n;
+</code></pre><p>   }<br>  `<br>  这里说明一下，首先gtest会创建一个QueueTest对象Q1来做第一个测试，然后TearDown,销毁这个对象。然后<br>再次创建一个QueueTest对象Q2来做第二个测试，然后继续TearDown，销毁．上述两个测试例子的顺序可以随意．</p>
+<p>需要注意的是<br>  1) #include<gtest gtest.h=""><br>  2) ::testing::InitGoogleTest(&amp;argc, argv);<br>  3) return RUN_ALL<em>TESTS(); //main函数必须这样返回<br>　　4) g++ main.cpp -lgtest -lpthread　//两个库的顺序一定不能搞错<br>  5) 如果在函数中使用这个，ASSERT</em>*() 只能用在返回值为void的函数中．</gtest></p>
+<p>想吐个槽，为啥感觉gtest gflag中argc argv　有时候带&amp;，有时候不带呢，很容易记混啊记混啊，虽然我知道去看相应的源码<br>就可以知道答案，但是懒得去仔细研究了，这些工具能先好好使用再说了．</p>
+<p>　　</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/gtest/" data-id="cinnage2d000aslxl3ppx9lt5" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/30/gflag_0412/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          (no title)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/30/iomanip/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title"></div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/30/cplusplus.string/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/caffe_blob/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/advancedGoogleTest/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/blas/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/boost_function/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 sharpL<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

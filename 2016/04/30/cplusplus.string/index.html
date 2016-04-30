@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>sharp&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天友人来访，应邀写一个段程序处理数据，其中设计到字符串的操作（split find）然后发觉自己对这一块儿蛮生疏，查阅cplusplus,总结如下。
+string是std的一个类.typedef basic_string string;
+
+构造函数，copy构造函数，assign
+
+string() ; //empty stringstring(const string&amp;amp; str); /">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sharp's blog">
+<meta property="og:url" content="http://yoursite.com/2016/04/30/cplusplus.string/index.html">
+<meta property="og:site_name" content="sharp's blog">
+<meta property="og:description" content="今天友人来访，应邀写一个段程序处理数据，其中设计到字符串的操作（split find）然后发觉自己对这一块儿蛮生疏，查阅cplusplus,总结如下。
+string是std的一个类.typedef basic_string string;
+
+构造函数，copy构造函数，assign
+
+string() ; //empty stringstring(const string&amp;amp; str); /">
+<meta property="og:updated_time" content="2016-04-30T15:13:37.400Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="sharp's blog">
+<meta name="twitter:description" content="今天友人来访，应邀写一个段程序处理数据，其中设计到字符串的操作（split find）然后发觉自己对这一块儿蛮生疏，查阅cplusplus,总结如下。
+string是std的一个类.typedef basic_string string;
+
+构造函数，copy构造函数，assign
+
+string() ; //empty stringstring(const string&amp;amp; str); /">
+  
+    <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sharp&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">my life since 2015.12.19</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-cplusplus.string" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/cplusplus.string/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天友人来访，应邀写一个段程序处理数据，其中设计到字符串的操作（split find）<br>然后发觉自己对这一块儿蛮生疏，查阅cplusplus,总结如下。</p>
+<p>string是std的一个类.typedef basic_string<char> string;</char></p>
+<ol>
+<li><p>构造函数，copy构造函数，assign</p>
+<blockquote>
+<p>string() ; //empty string<br>string(const string&amp; str); //copy<br>　　&gt; string(const string&amp; str, size_t pos, size_t len = npos);<br>string(const char<em> s)<br>string(const char</em> s, size_t n)<br>string(size_t n, char c);<br>template<class inputiterator=""> string(InputIterator first, InputIterator last) //[first, last)</class></p>
+<p>string&amp; operator=(const string&amp; str);<br>string&amp; operator=(const char* s);<br>string&amp; operator=(char c)</p>
+<p>string&amp; assign(const string&amp; str);<br>string&amp; assign(const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; assign(const char<em> s)<br>string&amp; assign(const char</em> s, size_t n)<br>string&amp; assign(size_t n, char c)<br>template<class inputiterator=""> string assign&amp;(InputIterator first, InputIterator last);</class></p>
+</blockquote>
+</li>
+<li><p>size相关的<br>　　&gt; size_t size() const;</p>
+<blockquote>
+<p>size_t length() const;<br>size_t capacity() const;<br>size_t max_size() const;</p>
+<p>void reserve(size_t size = 0);</p>
+<p>bool empty();</p>
+<p>void clear();</p>
+</blockquote>
+<p>size() 和　length()都返回的是字符串的大小，但更推荐用前者。capacity() 返回的是为当前字符串申请的空间的大小，这个<br>大小是以byte来记，并且这个大小不小于字符串的长度。max_size()返回的是字符串能申请到的最大长度。因为字符串可以动态改变大小<br>所以，为了更加有效率，当可以预先知道字符串的大致长度范围的时候，最好使用reserve函数申请合适的空间长度，防止字符的不停<br>拷贝。<br>empty() 返回的是字符串是否为空，当然你可以使用size() &lt;= 0来判断，但是还是推荐使用这个函数。</p>
+</li>
+<li><p>element access</p>
+<blockquote>
+<p>char&amp; operator<a href="size_t pos"></a>;<br>const char&amp; operator<a href="size_t pos"></a>;<br>char&amp; at(size_t pos);<br>const char&amp; at(size_t pos) const;</p>
+</blockquote>
+<p>operator[] pos 小于length,不报异常。pos等于length时候，const 版本不报异常。其他情况均报异常。<br>　　 at 只要不在length范围内，就报异常。</p>
+</li>
+<li><p>modifers</p>
+<blockquote>
+<p>string&amp; operator+=(const string&amp; str);<br>string&amp; operator+=(const char&amp; c);<br>string&amp; operator+=(const char* s)</p>
+<p>string&amp; append(const string&amp; str);<br>string&amp; append(const string&amp; str, size_t npos, size_t sublen);<br>string&amp; append(const char<em> s);<br>　 &gt; string&amp; append(const char</em> s, size_t n);<br>string&amp; append(size_t n, char c);<br>template<typename inputiterator=""> string&amp; append(InputIterator first, InputIterator last);</typename></p>
+<p>string&amp; replace (size_t pos,  size_t len,  const string&amp; str);<br>string&amp; replace (iterator i1, iterator i2, const string&amp; str);<br>string&amp; replace (size_t pos,  size_t len,  const string&amp; str, size_t subpos, size_t sublen);<br>　 &gt; string&amp; replace (size_t pos,  size_t len,  const char<em> s);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s);<br>string&amp; replace (size_t pos,  size_t len,  const char<em> s, size_t n);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s, size_t n);<br>string&amp; replace (size_t pos,  size_t len,  size_t n, char c);<br>string&amp; replace (iterator i1, iterator i2, size_t n, char c);<br>template <class inputiterator=""> string&amp; replace (iterator i1, iterator i2, InputIterator first, InputIterator last);</class></p>
+<p>string&amp; erase (size_t pos = 0, size_t len = npos);<br>iterator erase (iterator p);<br>iterator erase (iterator first, iterator last);</p>
+<p>void swap (string&amp; str);</p>
+<p>string&amp; insert (size_t pos, const string&amp; str);<br>string&amp; insert (size_t pos, const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; insert (size_t pos, const char<em> s);<br>string&amp; insert (size_t pos, const char</em> s, size_t n);<br>string&amp; insert (size_t pos, size_t n, char c);<br>void insert (iterator p, size_t n, char c);<br>iterator insert (iterator p, char c);<br>template <class inputiterator=""> void insert (iterator p, InputIterator first, InputIterator last);</class></p>
+</blockquote>
+</li>
+<li><p>find相关的<br>　 &gt; size_t find (const string&amp; str, size_t pos = 0) const;</p>
+<blockquote>
+<p>size_t find (const char<em> s, size_t pos = 0) const;<br>size_t find (const char</em> s, size_t pos, size_t n) const;<br>size_t find (char c, size_t pos = 0) const;</p>
+</blockquote>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="cinnage280007slxl6pcjoskk" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/04/30/caffe_blob/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title"></div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/30/cplusplus.string/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/caffe_blob/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/advancedGoogleTest/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/blas/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/boost_function/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 sharpL<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
