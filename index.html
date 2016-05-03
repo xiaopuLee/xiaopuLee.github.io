@@ -68,6 +68,309 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-data_transformer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/03/data_transformer/" class="article-date">
+  <time datetime="2016-05-04T02:27:30.000Z" itemprop="datePublished">2016-05-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/caffe/">caffe</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#caffe 源码阅读之data_transformer</p>
+<p>今天来说说data_transformer,data_transformer是caffe的基础类.<br>正如其名,它要做的事情就是对输入数据进行转换,例如对输入图片的进行crop mirror,减中值啊之类.<br>也可以根据需要开发新的转换方向.</p>
+<p>1 主要成员变量和方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">   public:</span><br><span class="line">explicit DataTransformer(const Transformation&amp; param, Phase phase)</span><br><span class="line">void InitRand();</span><br><span class="line"></span><br><span class="line">vector&lt;int&gt; InferBlobShape(const vector&lt;Mat&gt;&amp; mat_vector);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const Mat&amp; mat);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const vector&lt;Datum&gt;&amp; datum_vector);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const Datum&amp; datum);</span><br><span class="line"></span><br><span class="line">void Transform(const Datum&amp; datum, Blob&lt;Dtype&gt;* transformed_blbo);</span><br><span class="line">void Transform(const vector&lt;Datum&gt;&amp; datum_vector, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line">void Transform(const Mat&amp; img, Blob&lt;Dtype&gt;* tranformed_blbo);</span><br><span class="line">void Transform(const vecotr&lt;Mat&gt;&amp; mat_vector, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line"></span><br><span class="line">void Transform(Blob&lt;Dtype&gt;* input_blob, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line">   protected:</span><br><span class="line">void Transform(const Datum&amp; datum, Dtype* transformed_data);	</span><br><span class="line"></span><br><span class="line">TransformationParameter param_;</span><br><span class="line">shared_ptr&lt;Caffe::RNG&gt; rng_;</span><br><span class="line">Blob&lt;Dtype&gt; data_mean_;</span><br><span class="line">vector&lt;Dtype&gt; mean_values_;</span><br></pre></td></tr></table></figure>
+<p>首先是构造函数,需要指定Transformation 和 Phase,后者是定义训练类别,比如train test<br>前者是caffe.proto里面定义的数据结构,定义了scale mean_file mean_value crop等</p>
+<p>InferBlobShape 这一系列方法是通过传入的数据以及TransformationParameter来推测输出数据的BlobShape<br>暂且不表.</p>
+<p>Transform 这一系列方法是将不同的数据格式转换成Blob形式.<br>拿最简单的Datum -&gt; Dtype* 来说,其他的都大同小异.</p>
+<p>首先 mean_value 在caffe.proto中属于repeated类型,可以指定一个或者跟channels数严格相等个,并且不能和<br>mean_file同时指定.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const bool do_mirror = param_.mirror() &amp;&amp; Rand(2) //</span><br></pre></td></tr></table></figure>
+<p>这组数据是否做镜像,依据的是TransformationParameter 的mirror参数设为true,并且同时随机数随机成1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if(has_mean_values)</span><br><span class="line">&#123;</span><br><span class="line">	CHECK(mean_values.size() == 1 || mean_values_.size() == datum_channels);</span><br><span class="line">	if(datum_channels &gt;　1 &amp;&amp; mean_values_.size() == 1)</span><br><span class="line">	&#123;</span><br><span class="line">		for(int c=1; c!=datum_channels; ++c)</span><br><span class="line">			mean_values_.push_back(mean_values[0]);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先如果设定了mean_values的话，要么设置一个value值，然后复制datum_channels份，所有的通道共同使用这个，要么设定datum_channels个．</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">if(crop_size)</span><br><span class="line">&#123;</span><br><span class="line">	height = crop_size;</span><br><span class="line">	width = crop_size;</span><br><span class="line">	if(phase_ = TRAIN)</span><br><span class="line">	&#123;</span><br><span class="line">		h_off = Rand(datum_height - crop_size + 1);</span><br><span class="line">		w_off = Rand(datum_width - crop_size + 1);</span><br><span class="line">	&#125;</span><br><span class="line">	else</span><br><span class="line">	&#123;</span><br><span class="line">		h_off = (datum_height - crop_size) / 2;</span><br><span class="line">		w_off = (datum_height - crop_size) / 2;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中h_off, w_off分别是进行crop时候，crop后图像数据的原点(也就是左上角)在原图像中的h坐标和w坐标．</p>
+<p>值得注意的是，通过mirror和crop，caffe可以轻易地增加大量training data.</p>
+<p>之后就是进行crop后的数据和原图像数据进行减中值和scale处理．</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="cinrj809x0008mgxlgiyfyshf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-source-posts-data-transformer-md" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/03/source-posts-data-transformer-md/" class="article-date">
+  <time datetime="2016-05-03T13:04:40.000Z" itemprop="datePublished">2016-05-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/03/source-posts-data-transformer-md/" data-id="cinrj80ac000imgxld3lcumgp" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-blas" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/blas/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> 近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码<br>因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。</p>
+<p>blas以及他的各种衍生包的安装舍去不表。</p>
+<p>blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。<br>因此按照维度的增加，blas将运算分为三个level</p>
+<blockquote>
+<p>向量与向量的运算<br>矩阵和向量的运算<br>矩阵和矩阵的运算</p>
+</blockquote>
+<p>（由于太多，现在只了解用到部分，其余部分随用随添加）</p>
+<ol>
+<li>level1 向量向量运算<br>cblas_?asum  ？可取s, d, sc, dz 作用是Sum of vector magnitudes  （参数）</li>
+<li>level2 矩阵向量运算</li>
+<li><p>level3 矩阵矩阵运算<br>cblas<em>?gemm  ？ 可取s, d, c, z 用作一般矩阵的乘法<br>void cblas</em>？gemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, </p>
+<pre><code>const MKL_INT m, const MKL_INT n, const MKL_INT k, const float alpha, const float *a, 
+const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c, const MKL_INT ldc);
+</code></pre><p>C := alpha<em>op(A)</em>op(B) + beta*C,<br>alpha beta都是scalar A,B,C是矩阵 A（m×k） B（kxn） C（mxn）<br>如果transa=CblasNoTrans, op(A) = A， transa=CblasTrans, then op(A) = AT，transa=CblasConjTrans, then op(A) = AH.<br>m 指定的是op（A）以及C的行， n指定的是op(B)和C的列， k是op（A）的列和op（B）<br>lda 之类指定的是相应向量的leading demension 比如rowmajor下，transa=CblasNoTrans，lda&gt;=max(1, k)</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/blas/" data-id="cinrj809o0002mgxloorxp7ds" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-advancedGoogleTest" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/advancedGoogleTest/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>此为gtest的第二篇，来说一些高级技巧</p>
+<p>基本翻译自这里<a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md" target="_blank" rel="external">https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md</a></p>
+<ol>
+<li>more Assertions</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/advancedGoogleTest/" data-id="cinrj809q0003mgxlly5dq554" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-blog" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/blog/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>首先参考了 <a href="http://www.jianshu.com/p/858ecf233db9" target="_blank" rel="external">http://www.jianshu.com/p/858ecf233db9</a> 搭建了hexo<br>nodejs 的安装 是下载了源码， 然后参考 <a href="http://blog.csdn.net/awj3584/article/details/18401539" target="_blank" rel="external">http://blog.csdn.net/awj3584/article/details/18401539</a> 编译的<br>然后就是配置_config.yml里面， 原帖子中的有误？ 使用了如下配置成功<br>deploy:<br>type: git #部署类型, 本文使用Github<br>repo: <repo>  #部署的仓库的SSH<br>branch: master   #部署分支,一般使用master主分支<br>常用的hexo 命令<br>hexo init<br>hexo generate<br>hexo server 通过localhost查看<br>hexi deploy 挂载到github<br>都可以用类似于 hexo d这样简写的方式</repo></p>
+<p>首先简易说下caffe.cpp的使用方法</p>
+<p>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0<br>这是最简单的训练方法，其中-gpu 0 设定了device number, 如果不使用这个参数的话，程序会检查lenet_solver中是否指定mode 为 GPU，已经device num<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -snapshot examples/test/lenet_solver_iter_75.solverstate<br>这是接着上次的训练，比如因为其他内在外在的原因，其中snapshot的参数为保存的以前的训练状态，例如上式中iter_75就是训练到75的时候<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -weights examples/test/lenet_solver_iter_75.caffemodel<br>这是finetune的过程，其中.caffemodel是之前训练保存的参数。finetune真是好用，简单不到10次重复finetune就达到了我之前使用几万次迭代才能得到的结果</p>
+<p>./build/tools/caffe device_query -gpu 0<br>查询制定的gpu的参数。</p>
+<p>./build/tools/caffe test -model examples/test/lenet_train_test.prototxt -weights examples/test/lenet_solver_iter_75.caffemodel -gpu 0 -iterations 100<br>这是测试模型-model参数指的是神经网络模型的net参数 -weights 为训练出来的网络参数 -iterations为测试的迭代次数 默认为50</p>
+<p>./build/tools/caffe time -model examples/test/lenet_train_test.prototxt -iterations 20<br>分析网络模型前向和后向传播的时间</p>
+<p>简易分析源码<br>现在的tools里面有四个参数，由1也可以看到，包括train test decive_query test,当然可以自行添加，只需仿照上述四个参数的代码自行添加所需即可。<br>首先，定义函数指针，返回值为int，无参数输入。可以看到上述train test devie_query test 均为这样的函数。<br>typedef int (*BrewFunction)();<br>然后定义一个map，typedef map<caffe::string, brefunction=""> BrewMap; BrewMap g_brew_map,<br>之后就是</caffe::string,></p>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23</p>
+<p>#define RegisterBrewFunction(func) \<br>   namespace { \<br>    class <strong>Registerer_##func { \<br>        public: /<em> NOLINT </em>/ \
+         </strong>Registerer_##func() { \<br>         g_brew<em>map[#func] = &func; \<br>         } \<br>    }; \<br>    __Registerer</em>##func g<em>registerer</em>##func; \<br>   }</p>
+<p>static BrewFunction GetBrewFunction(const caffe::string&amp; name) {<br>  if (g_brew_map.count(name)) {<br>    return g_brew_map[name];<br>  } else {<br>    LOG(ERROR) &lt;&lt; “Available caffe actions:”;<br>    for (BrewMap::iterator it = g_brew_map.begin();<br>         it != g_brew<em>map.end(); ++it) {<br>      LOG(ERROR) &lt;&lt; “\t” &lt;&lt; it-&gt;first;<br>    }<br>    LOG(FATAL) &lt;&lt; “Unknown action: “ &lt;&lt; name;<br>    return NULL;  // not reachable, just to suppress old compiler warnings.<br>  }<br>其中##表示的是拼接两个字符串，#表示的是将其转换为字符串。如RegisterBrewFunction(time)的话 Registerer</em>##func会在编译前替换成Registerer_time，而<br>g_brew_map[#func] = &func;则会替换成g_brew_map[“time”] = &time; #@fun 会被替换为’fun’（这里没用到，嘻嘻）<br>在train中</p>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>if (FLAGS_gpu &lt; 0<br>    &amp;&amp; solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {<br>  FLAGS_gpu = solver_param.device_id();<br>}</p>
+<p>// Set device id and mode<br>if (FLAGS_gpu &gt;= 0) {<br>  LOG(INFO) &lt;&lt; “Use GPU with device ID “ &lt;&lt; FLAGS_gpu;<br>  Caffe::SetDevice(FLAGS_gpu);<br>  Caffe::set_mode(Caffe::GPU);<br>} else {<br>  LOG(INFO) &lt;&lt; “Use CPU.”;<br>  Caffe::set_mode(Caffe::CPU);<br>}<br>可以得知，如果在cmd端不指定-gpu的话，程序会去查询solver中是否制定了gpu mode以及device number。<br>其他部分代码差不多很显然易见了。有空再仔细分析吧。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/blog/" data-id="cinrj809r0004mgxl7mdi5pop" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-boost_function" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/boost_function/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今儿来说说boost 的 function</p>
+<p>1 最简单的用法<br> 看代码<br> `</p>
+<p> #include<boost function.hpp=""></boost></p>
+<p> #include<iostream></iostream></p>
+<p> int fun(int a, int b)<br> {<br>    return a + b;<br> }<br> double fund(double a, double b)<br> {<br>    return a － b;<br> }<br> int fun2(int a, int b)<br> {<br>    return a - b;<br> }</p>
+<p> int main()<br> {<br>   boost::function<int (int,="" int)=""> i_i_i;<br>   i_i_i = &fun;<br>   std::cout &lt;&lt; fun(1, 2) &lt;&lt; “ “<br>     &lt;&lt; i_i_i(1, 2) &lt;&lt; std::endl;<br>   // 1) 3 3<br>　　　i_i_i = &fund;<br>   std::cout &lt;&lt; fund(3.1, 4.1) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(3.1, 4.1) &lt;&lt; std::endl;<br>   // 2)7.2 7<br>   i_i_i = &fun2;<br>   std::cout &lt;&lt; fun2(5, 6) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(5, 6) &lt;&lt;　std::endl;<br>   // 3) -1 -1<br>   return 0;<br> }<br> `<br> 从上述代码可以看出其实function<int (int,="" int)=""> 是定义了一种类型，<br>这种类型的对象可以执行一类返回值是int 并且有且具有两个int 参数的函数.</int></int></p>
+<p>从2)处的输出值可以推测，上面那句i_i_i=&amp;fund…….（留待继续探究）</p>
+<ol>
+<li>跟类结合在一块儿时候</li>
+</ol>
+<p>　尤其注意要传类指针<br> <code>class X
+ {
+    public:
+    int foo(int x, int b)
+        {
+           return a + b;
+        }
+ }
+ boost::function&lt;int (X*, int, int)&gt; f;
+ f = &amp;X::foo;
+ std::cout &lt;&lt; f(1, 2) &lt;&lt; std::endl;
+ // 3</code></p>
+<ol>
+<li>跟bind函数一块儿起作用</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/boost_function/" data-id="cinrj809t0005mgxljf37o1zw" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-caffe_syncedMem" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/caffe_syncedMem/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来说说caffe中的底层类SyncedMemory</p>
+<p>首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。</p>
+<ol>
+<li><p>SyncedMemory的成员变量</p>
+<p><code>void* cpu_ptr_;
+void* gpu_ptr_;
+size_t size_;
+SyncedHead head_; //enum SyncedHead { UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED };
+bool own_cpu_data_;
+bool cpu_malloc_use_cuda_;
+bool own_gpu_data_;
+int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变量的具体含义，尤其需要注意的是own_[c,g]pu<em>data</em>,这两个变量标示的是<br>如果相对应的[c,g]pu<em>ptr</em>指向的数据是通过malloc等方式申请的话，其值为true，通过set_方法赋值时（与别的变量共享），其值为false<br>从而在变量销毁的时候不会将共享数据的数据释放掉。<br>cpu_malloc_use<em>cuda</em> 变量标示的是在申请cpu内存的时候是否使用的是cuda的相应方法，使用cuda的方法能够申请得到pinned memory,是的<br>在多卡进行训练时候，提高数据copy的效率使得large models on multi-gpu 更加稳定。</p>
+</li>
+<li><p>SyncedMemory的成员函数<br>private 成员函数,<br><code>void to_cpu();
+ void to_gpu();</code><br>这俩函数是类内部函数，实现的是cpu和gpu数据的同步。值的注意的地方是在 在数据传输过程中，数据head_的更新。</p>
+<p>接口函数<br>`<br>const void<em> cpu_data();<br>void</em> mutable_cpu_data();<br>void set_cpu_data(void* data);</p>
+<p>const void<em> gpu_data();<br>void</em> mutable_gpu_data();<br>void set_gpu_data(void* data);</p>
+<p>size_t size();<br>SyncedHead head();<br>void async_gpu_push(const cudaStream_t&amp; stream);<br>`<br>很简易的接口，从名字就可以知道他们的作用。</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/caffe_syncedMem/" data-id="cinrj809u0006mgxlr27j7zbs" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-cplusplus.string" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/30/cplusplus.string/" class="article-date">
@@ -125,242 +428,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="cinnage280007slxl6pcjoskk" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-caffe_blob" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/caffe_blob/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/caffe_blob/" data-id="cinnage1k0000slxlnp3k92ta" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-advancedGoogleTest" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/advancedGoogleTest/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>此为gtest的第二篇，来说一些高级技巧</p>
-<p>基本翻译自这里<a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md" target="_blank" rel="external">https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md</a></p>
-<ol>
-<li>more Assertions</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/advancedGoogleTest/" data-id="cinnage210002slxlcb0fas25" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-blas" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/blas/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p> 近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码<br>因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。</p>
-<p>blas以及他的各种衍生包的安装舍去不表。</p>
-<p>blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。<br>因此按照维度的增加，blas将运算分为三个level</p>
-<blockquote>
-<p>向量与向量的运算<br>矩阵和向量的运算<br>矩阵和矩阵的运算</p>
-</blockquote>
-<p>（由于太多，现在只了解用到部分，其余部分随用随添加）</p>
-<ol>
-<li>level1 向量向量运算<br>cblas_?asum  ？可取s, d, sc, dz 作用是Sum of vector magnitudes  （参数）</li>
-<li>level2 矩阵向量运算</li>
-<li><p>level3 矩阵矩阵运算<br>cblas<em>?gemm  ？ 可取s, d, c, z 用作一般矩阵的乘法<br>void cblas</em>？gemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, </p>
-<pre><code>const MKL_INT m, const MKL_INT n, const MKL_INT k, const float alpha, const float *a, 
-const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c, const MKL_INT ldc);
-</code></pre><p>C := alpha<em>op(A)</em>op(B) + beta*C,<br>alpha beta都是scalar A,B,C是矩阵 A（m×k） B（kxn） C（mxn）<br>如果transa=CblasNoTrans, op(A) = A， transa=CblasTrans, then op(A) = AT，transa=CblasConjTrans, then op(A) = AH.<br>m 指定的是op（A）以及C的行， n指定的是op(B)和C的列， k是op（A）的列和op（B）<br>lda 之类指定的是相应向量的leading demension 比如rowmajor下，transa=CblasNoTrans，lda&gt;=max(1, k)</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/blas/" data-id="cinnage240003slxlp0agqiu7" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-boost_function" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/boost_function/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今儿来说说boost 的 function</p>
-<p>1 最简单的用法<br> 看代码<br> `</p>
-<p> #include<boost function.hpp=""></boost></p>
-<p> #include<iostream></iostream></p>
-<p> int fun(int a, int b)<br> {<br>    return a + b;<br> }<br> double fund(double a, double b)<br> {<br>    return a － b;<br> }<br> int fun2(int a, int b)<br> {<br>    return a - b;<br> }</p>
-<p> int main()<br> {<br>   boost::function<int (int,="" int)=""> i_i_i;<br>   i_i_i = &fun;<br>   std::cout &lt;&lt; fun(1, 2) &lt;&lt; “ “<br>     &lt;&lt; i_i_i(1, 2) &lt;&lt; std::endl;<br>   // 1) 3 3<br>　　　i_i_i = &fund;<br>   std::cout &lt;&lt; fund(3.1, 4.1) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(3.1, 4.1) &lt;&lt; std::endl;<br>   // 2)7.2 7<br>   i_i_i = &fun2;<br>   std::cout &lt;&lt; fun2(5, 6) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(5, 6) &lt;&lt;　std::endl;<br>   // 3) -1 -1<br>   return 0;<br> }<br> `<br> 从上述代码可以看出其实function<int (int,="" int)=""> 是定义了一种类型，<br>这种类型的对象可以执行一类返回值是int 并且有且具有两个int 参数的函数.</int></int></p>
-<p>从2)处的输出值可以推测，上面那句i_i_i=&amp;fund…….（留待继续探究）</p>
-<ol>
-<li>跟类结合在一块儿时候</li>
-</ol>
-<p>　尤其注意要传类指针<br> <code>class X
- {
-    public:
-    int foo(int x, int b)
-        {
-           return a + b;
-        }
- }
- boost::function&lt;int (X*, int, int)&gt; f;
- f = &amp;X::foo;
- std::cout &lt;&lt; f(1, 2) &lt;&lt; std::endl;
- // 3</code></p>
-<ol>
-<li>跟bind函数一块儿起作用</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/boost_function/" data-id="cinnage260004slxlw20lvbkn" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-blog" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/blog/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>首先参考了 <a href="http://www.jianshu.com/p/858ecf233db9" target="_blank" rel="external">http://www.jianshu.com/p/858ecf233db9</a> 搭建了hexo<br>nodejs 的安装 是下载了源码， 然后参考 <a href="http://blog.csdn.net/awj3584/article/details/18401539" target="_blank" rel="external">http://blog.csdn.net/awj3584/article/details/18401539</a> 编译的<br>然后就是配置_config.yml里面， 原帖子中的有误？ 使用了如下配置成功<br>deploy:<br>type: git #部署类型, 本文使用Github<br>repo: <repo>  #部署的仓库的SSH<br>branch: master   #部署分支,一般使用master主分支<br>常用的hexo 命令<br>hexo init<br>hexo generate<br>hexo server 通过localhost查看<br>hexi deploy 挂载到github<br>都可以用类似于 hexo d这样简写的方式</repo></p>
-<p>首先简易说下caffe.cpp的使用方法</p>
-<p>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0<br>这是最简单的训练方法，其中-gpu 0 设定了device number, 如果不使用这个参数的话，程序会检查lenet_solver中是否指定mode 为 GPU，已经device num<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -snapshot examples/test/lenet_solver_iter_75.solverstate<br>这是接着上次的训练，比如因为其他内在外在的原因，其中snapshot的参数为保存的以前的训练状态，例如上式中iter_75就是训练到75的时候<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -weights examples/test/lenet_solver_iter_75.caffemodel<br>这是finetune的过程，其中.caffemodel是之前训练保存的参数。finetune真是好用，简单不到10次重复finetune就达到了我之前使用几万次迭代才能得到的结果</p>
-<p>./build/tools/caffe device_query -gpu 0<br>查询制定的gpu的参数。</p>
-<p>./build/tools/caffe test -model examples/test/lenet_train_test.prototxt -weights examples/test/lenet_solver_iter_75.caffemodel -gpu 0 -iterations 100<br>这是测试模型-model参数指的是神经网络模型的net参数 -weights 为训练出来的网络参数 -iterations为测试的迭代次数 默认为50</p>
-<p>./build/tools/caffe time -model examples/test/lenet_train_test.prototxt -iterations 20<br>分析网络模型前向和后向传播的时间</p>
-<p>简易分析源码<br>现在的tools里面有四个参数，由1也可以看到，包括train test decive_query test,当然可以自行添加，只需仿照上述四个参数的代码自行添加所需即可。<br>首先，定义函数指针，返回值为int，无参数输入。可以看到上述train test devie_query test 均为这样的函数。<br>typedef int (*BrewFunction)();<br>然后定义一个map，typedef map<caffe::string, brefunction=""> BrewMap; BrewMap g_brew_map,<br>之后就是</caffe::string,></p>
-<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23</p>
-<p>#define RegisterBrewFunction(func) \<br>   namespace { \<br>    class <strong>Registerer_##func { \<br>        public: /<em> NOLINT </em>/ \
-         </strong>Registerer_##func() { \<br>         g_brew<em>map[#func] = &func; \<br>         } \<br>    }; \<br>    __Registerer</em>##func g<em>registerer</em>##func; \<br>   }</p>
-<p>static BrewFunction GetBrewFunction(const caffe::string&amp; name) {<br>  if (g_brew_map.count(name)) {<br>    return g_brew_map[name];<br>  } else {<br>    LOG(ERROR) &lt;&lt; “Available caffe actions:”;<br>    for (BrewMap::iterator it = g_brew_map.begin();<br>         it != g_brew<em>map.end(); ++it) {<br>      LOG(ERROR) &lt;&lt; “\t” &lt;&lt; it-&gt;first;<br>    }<br>    LOG(FATAL) &lt;&lt; “Unknown action: “ &lt;&lt; name;<br>    return NULL;  // not reachable, just to suppress old compiler warnings.<br>  }<br>其中##表示的是拼接两个字符串，#表示的是将其转换为字符串。如RegisterBrewFunction(time)的话 Registerer</em>##func会在编译前替换成Registerer_time，而<br>g_brew_map[#func] = &func;则会替换成g_brew_map[“time”] = &time; #@fun 会被替换为’fun’（这里没用到，嘻嘻）<br>在train中</p>
-<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>if (FLAGS_gpu &lt; 0<br>    &amp;&amp; solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {<br>  FLAGS_gpu = solver_param.device_id();<br>}</p>
-<p>// Set device id and mode<br>if (FLAGS_gpu &gt;= 0) {<br>  LOG(INFO) &lt;&lt; “Use GPU with device ID “ &lt;&lt; FLAGS_gpu;<br>  Caffe::SetDevice(FLAGS_gpu);<br>  Caffe::set_mode(Caffe::GPU);<br>} else {<br>  LOG(INFO) &lt;&lt; “Use CPU.”;<br>  Caffe::set_mode(Caffe::CPU);<br>}<br>可以得知，如果在cmd端不指定-gpu的话，程序会去查询solver中是否制定了gpu mode以及device number。<br>其他部分代码差不多很显然易见了。有空再仔细分析吧。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/blog/" data-id="cinnage260005slxl2yn8nxeq" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-caffe_syncedMem" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/caffe_syncedMem/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天来说说caffe中的底层类SyncedMemory</p>
-<p>首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。</p>
-<ol>
-<li><p>SyncedMemory的成员变量</p>
-<p><code>void* cpu_ptr_;
-void* gpu_ptr_;
-size_t size_;
-SyncedHead head_; //enum SyncedHead { UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED };
-bool own_cpu_data_;
-bool cpu_malloc_use_cuda_;
-bool own_gpu_data_;
-int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变量的具体含义，尤其需要注意的是own_[c,g]pu<em>data</em>,这两个变量标示的是<br>如果相对应的[c,g]pu<em>ptr</em>指向的数据是通过malloc等方式申请的话，其值为true，通过set_方法赋值时（与别的变量共享），其值为false<br>从而在变量销毁的时候不会将共享数据的数据释放掉。<br>cpu_malloc_use<em>cuda</em> 变量标示的是在申请cpu内存的时候是否使用的是cuda的相应方法，使用cuda的方法能够申请得到pinned memory,是的<br>在多卡进行训练时候，提高数据copy的效率使得large models on multi-gpu 更加稳定。</p>
-</li>
-<li><p>SyncedMemory的成员函数<br>private 成员函数,<br><code>void to_cpu();
- void to_gpu();</code><br>这俩函数是类内部函数，实现的是cpu和gpu数据的同步。值的注意的地方是在 在数据传输过程中，数据head_的更新。</p>
-<p>接口函数<br>`<br>const void<em> cpu_data();<br>void</em> mutable_cpu_data();<br>void set_cpu_data(void* data);</p>
-<p>const void<em> gpu_data();<br>void</em> mutable_gpu_data();<br>void set_gpu_data(void* data);</p>
-<p>size_t size();<br>SyncedHead head();<br>void async_gpu_push(const cudaStream_t&amp; stream);<br>`<br>很简易的接口，从名字就可以知道他们的作用。</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/caffe_syncedMem/" data-id="cinnage270006slxlsrjsmp2n" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="cinrj809w0007mgxld78bdf59" class="article-share-link">Share</a>
       
       
     </footer>
@@ -386,7 +454,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="cinnage1o0001slxlqwudjtv7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="cinrj809b0001mgxlwv9hld0m" class="article-share-link">Share</a>
       
       
     </footer>
@@ -424,78 +492,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/debug_0412/" data-id="cinnage2a0008slxlervdflot" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-gflag_0412" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/gflag_0412/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天来说一下google的开源库gflag</p>
-<p>#用途<br>  首先gflag是一个command line parser，是用来解析命令行输入参数的。<br>  例如输入命令行 ./&lt; your app &gt; -year 2016 -month 4</p>
-<p>#如何解析？<br>  首先在全局初始化的时候可以这样定义一个变量<br>    DEFINE_bool(flag, true, “help flag”);<br>  上述语句定义了一个bool变量flag，默认值为true，变量帮助说明为 help flag的语句。在程序中，即可通过访问FLAGS_flag<br>这个变量来访问命令行穿进来的flag的值。是不是很方便？<br>  除了bool值，gflag还支持其他5种数值类型，如int32 int64 uint64 string double。那么是否支持更复杂的类型呢？回答是no，google<br>给出的解释我觉得很赞–他们更愿意将对数据的处理放在程序中，而这时候gflag就只负责解析命令行的参数即可。<br>一段简易的代码。</p>
-<pre><code>#include&lt;iostream&gt;
-#include&lt;gflags/gflags.h&gt;
-
-DEFINE_bool(big_menu, true, &quot;include &apos;advanced&apos; options in the menu listing&quot;);
-DEFINE_string(languages, &quot;english, french, german&quot;, &quot;comma-separated list of languages to offer int the &apos;lang&apos; menu&quot;);
-
-int main(int argc, char** argv)
-{
-   google::ParseCommandLineFlags(&amp;argc, &amp;argv, true);
-   std::cout &lt;&lt; FLAGS_languages &lt;&lt; std::endl;
-   if(FLAGS_big_menu)
-   {
-      std::cout &lt;&lt; &quot;the big menu is true&quot; &lt;&lt; std::endl;
-   }
-   else
-   {
-      std::cout &lt;&lt; &quot;the big menu is false&quot; &lt;&lt; std::endl;
-   }
-   return 0;
-}
-</code></pre><p>#如何通过command line传入参数呢？<br>  所有的flag都可以有以下四中格式，如 –flag value， –flag=value -flag=value -flag value<br>  bool除了以上四种格式，还可以通过–nobig_menu –big_menu来设定。</p>
-<p>  如果不小心同一个参数传入了多次呢？ 如./&lt; your app &gt; -year 2016 -month 4 -year 2013,此时以最好一个传入的为准。</p>
-<p>#如何保证传入的参数的正确性呢？<br>  首先我们需要在使用的时候就要确认好各种参数的类型以及他可能的取值范围。<br>  其次，我们可以通过gflag的validator来做进一步的检测。<br>  看代码。<br>    static bool ValidatePort(const char* flagname, int32 value) {<br>       if (value &gt; 0 &amp;&amp; value &lt; 32768)   // value is ok<br>         return true;<br>       printf(“Invalid value for –%s: %d\n”, flagname, (int)value);<br>       return false;<br>    }<br>    DEFINE_int32(port, 0, “What port to listen on”);<br>    static const bool port_dummy = RegisterFlagValidator(&amp;FLAGS_port, &amp;ValidatePort);<br>   通常，上述validator需要在define 变量后立即register，需要在全局初始化的时候进行。分析上述代码即可知道他将port传入的值和validateport<br>函数绑定在一起，只要传入值即对这个值进行检验，例如在上述代码中，如果value 在（0， 32678）范围内，就会返回true，其他范围返回false，此时如果flag<br>是默认值的话，程序会go die，如果是其他值的话，程序会保留这个值。（待验证）</p>
-<p>#多处使用flag，以及改变flag的默认值</p>
-<p>#showusage 和 showversion</p>
-<pre><code>FLAGS_alsologtostderr = 1;
-// Set version
-gflags::SetVersionString(AS_STRING(CAFFE_VERSION));
-// Usage message.
-gflags::SetUsageMessage(&quot;command line brew\n&quot;
-&quot;usage: caffe &lt;command&gt; &lt;args&gt;\n\n&quot;
-&quot;commands:\n&quot;
-&quot;  train           train or finetune a model\n&quot;
-&quot;  test            score a model\n&quot;
-&quot;  device_query    show GPU diagnostic information\n&quot;
-&quot;  time            benchmark model execution time&quot;);
-</code></pre><p>#其他</p>
-<ol>
-<li>在ubuntu系统中，可以设置环境变量export FLAG_flag = 1 export FLAG_bar = 2<br>然后–fromenv=flag,bar 即可从环境变量中读取值，但是环境中并未设置这样的值的话或者程序中并未设定这样的flag，程序会崩溃。一个折中的<br>方法就是使用tryfromenv=flag，bar</li>
-<li>也可以在文件中设定参数值，如写一个文本文件f，内容如下<br> –nobig_menus<br> –languages=english,french<br>然后通过–flagfile=f 即可访问。</li>
-</ol>
-<p>参考：<br>   <a href="http://gflags.github.io/gflags/" target="_blank" rel="external">http://gflags.github.io/gflags/</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/gflag_0412/" data-id="cinnage2c0009slxl8cavr6qb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/debug_0412/" data-id="cinrj809z0009mgxllghaug4e" class="article-share-link">Share</a>
       
       
     </footer>
@@ -515,18 +512,39 @@ gflags::SetUsageMessage(&quot;command line brew\n&quot;
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li></ul>
+    </div>
+  </div>
+
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
+    </div>
+  </div>
+
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a>
+    </div>
+  </div>
+
   
     
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
     </div>
   </div>
 
@@ -539,15 +557,11 @@ gflags::SetUsageMessage(&quot;command line brew\n&quot;
       <ul>
         
           <li>
-            <a href="/2016/04/30/cplusplus.string/">(no title)</a>
+            <a href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
           </li>
         
           <li>
-            <a href="/2016/04/30/caffe_blob/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/30/advancedGoogleTest/">(no title)</a>
+            <a href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
           </li>
         
           <li>
@@ -555,7 +569,11 @@ gflags::SetUsageMessage(&quot;command line brew\n&quot;
           </li>
         
           <li>
-            <a href="/2016/04/30/boost_function/">(no title)</a>
+            <a href="/2016/04/30/advancedGoogleTest/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/blog/">(no title)</a>
           </li>
         
       </ul>

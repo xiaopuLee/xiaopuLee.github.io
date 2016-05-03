@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>caffe 源码阅读之data_transformer | sharp&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="#caffe 源码阅读之data_transformer
+今天来说说data_transformer,data_transformer是caffe的基础类.正如其名,它要做的事情就是对输入数据进行转换,例如对输入图片的进行crop mirror,减中值啊之类.也可以根据需要开发新的转换方向.
+1 主要成员变量和方法
+12345678910111213141516171819202122   pub">
+<meta property="og:type" content="article">
+<meta property="og:title" content="caffe 源码阅读之data_transformer">
+<meta property="og:url" content="http://yoursite.com/2016/05/03/data_transformer/index.html">
+<meta property="og:site_name" content="sharp's blog">
+<meta property="og:description" content="#caffe 源码阅读之data_transformer
+今天来说说data_transformer,data_transformer是caffe的基础类.正如其名,它要做的事情就是对输入数据进行转换,例如对输入图片的进行crop mirror,减中值啊之类.也可以根据需要开发新的转换方向.
+1 主要成员变量和方法
+12345678910111213141516171819202122   pub">
+<meta property="og:updated_time" content="2016-05-03T14:28:38.608Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="caffe 源码阅读之data_transformer">
+<meta name="twitter:description" content="#caffe 源码阅读之data_transformer
+今天来说说data_transformer,data_transformer是caffe的基础类.正如其名,它要做的事情就是对输入数据进行转换,例如对输入图片的进行crop mirror,减中值啊之类.也可以根据需要开发新的转换方向.
+1 主要成员变量和方法
+12345678910111213141516171819202122   pub">
+  
+    <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sharp&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">my life since 2015.12.19</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-data_transformer" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/03/data_transformer/" class="article-date">
+  <time datetime="2016-05-04T02:27:30.000Z" itemprop="datePublished">2016-05-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/caffe/">caffe</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      caffe 源码阅读之data_transformer
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#caffe 源码阅读之data_transformer</p>
+<p>今天来说说data_transformer,data_transformer是caffe的基础类.<br>正如其名,它要做的事情就是对输入数据进行转换,例如对输入图片的进行crop mirror,减中值啊之类.<br>也可以根据需要开发新的转换方向.</p>
+<p>1 主要成员变量和方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">   public:</span><br><span class="line">explicit DataTransformer(const Transformation&amp; param, Phase phase)</span><br><span class="line">void InitRand();</span><br><span class="line"></span><br><span class="line">vector&lt;int&gt; InferBlobShape(const vector&lt;Mat&gt;&amp; mat_vector);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const Mat&amp; mat);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const vector&lt;Datum&gt;&amp; datum_vector);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const Datum&amp; datum);</span><br><span class="line"></span><br><span class="line">void Transform(const Datum&amp; datum, Blob&lt;Dtype&gt;* transformed_blbo);</span><br><span class="line">void Transform(const vector&lt;Datum&gt;&amp; datum_vector, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line">void Transform(const Mat&amp; img, Blob&lt;Dtype&gt;* tranformed_blbo);</span><br><span class="line">void Transform(const vecotr&lt;Mat&gt;&amp; mat_vector, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line"></span><br><span class="line">void Transform(Blob&lt;Dtype&gt;* input_blob, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line">   protected:</span><br><span class="line">void Transform(const Datum&amp; datum, Dtype* transformed_data);	</span><br><span class="line"></span><br><span class="line">TransformationParameter param_;</span><br><span class="line">shared_ptr&lt;Caffe::RNG&gt; rng_;</span><br><span class="line">Blob&lt;Dtype&gt; data_mean_;</span><br><span class="line">vector&lt;Dtype&gt; mean_values_;</span><br></pre></td></tr></table></figure>
+<p>首先是构造函数,需要指定Transformation 和 Phase,后者是定义训练类别,比如train test<br>前者是caffe.proto里面定义的数据结构,定义了scale mean_file mean_value crop等</p>
+<p>InferBlobShape 这一系列方法是通过传入的数据以及TransformationParameter来推测输出数据的BlobShape<br>暂且不表.</p>
+<p>Transform 这一系列方法是将不同的数据格式转换成Blob形式.<br>拿最简单的Datum -&gt; Dtype* 来说,其他的都大同小异.</p>
+<p>首先 mean_value 在caffe.proto中属于repeated类型,可以指定一个或者跟channels数严格相等个,并且不能和<br>mean_file同时指定.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const bool do_mirror = param_.mirror() &amp;&amp; Rand(2) //</span><br></pre></td></tr></table></figure>
+<p>这组数据是否做镜像,依据的是TransformationParameter 的mirror参数设为true,并且同时随机数随机成1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if(has_mean_values)</span><br><span class="line">&#123;</span><br><span class="line">	CHECK(mean_values.size() == 1 || mean_values_.size() == datum_channels);</span><br><span class="line">	if(datum_channels &gt;　1 &amp;&amp; mean_values_.size() == 1)</span><br><span class="line">	&#123;</span><br><span class="line">		for(int c=1; c!=datum_channels; ++c)</span><br><span class="line">			mean_values_.push_back(mean_values[0]);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先如果设定了mean_values的话，要么设置一个value值，然后复制datum_channels份，所有的通道共同使用这个，要么设定datum_channels个．</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">if(crop_size)</span><br><span class="line">&#123;</span><br><span class="line">	height = crop_size;</span><br><span class="line">	width = crop_size;</span><br><span class="line">	if(phase_ = TRAIN)</span><br><span class="line">	&#123;</span><br><span class="line">		h_off = Rand(datum_height - crop_size + 1);</span><br><span class="line">		w_off = Rand(datum_width - crop_size + 1);</span><br><span class="line">	&#125;</span><br><span class="line">	else</span><br><span class="line">	&#123;</span><br><span class="line">		h_off = (datum_height - crop_size) / 2;</span><br><span class="line">		w_off = (datum_height - crop_size) / 2;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中h_off, w_off分别是进行crop时候，crop后图像数据的原点(也就是左上角)在原图像中的h坐标和w坐标．</p>
+<p>值得注意的是，通过mirror和crop，caffe可以轻易地增加大量training data.</p>
+<p>之后就是进行crop后的数据和原图像数据进行减中值和scale处理．</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="cinrj809x0008mgxlgiyfyshf" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/05/03/source-posts-data-transformer-md/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">source/_posts/data_transformer.md</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/blas/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/advancedGoogleTest/">(no title)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/blog/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 sharpL<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
