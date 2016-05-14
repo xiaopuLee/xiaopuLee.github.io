@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>boost_0515 | sharp&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天来说说boost的一些小工具，有一些类，也有一些宏，来自＜boost程序库完全开发指南&amp;gt;
+noncopyable  在编写一些类的时候，我们通常需要这样的功能－－如禁止类实例的复制和赋值，一般的实现方式就是将copy构造函数或者operator=的属性设置为private 即可．如caffe中就是将使用DISABLE_COPY_AND_ASSIGN(＼),而宏DISABLE_COPY_A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="boost_0515">
+<meta property="og:url" content="http://yoursite.com/2016/05/14/boost_0515/index.html">
+<meta property="og:site_name" content="sharp's blog">
+<meta property="og:description" content="今天来说说boost的一些小工具，有一些类，也有一些宏，来自＜boost程序库完全开发指南&amp;gt;
+noncopyable  在编写一些类的时候，我们通常需要这样的功能－－如禁止类实例的复制和赋值，一般的实现方式就是将copy构造函数或者operator=的属性设置为private 即可．如caffe中就是将使用DISABLE_COPY_AND_ASSIGN(＼),而宏DISABLE_COPY_A">
+<meta property="og:updated_time" content="2016-05-14T11:25:25.959Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="boost_0515">
+<meta name="twitter:description" content="今天来说说boost的一些小工具，有一些类，也有一些宏，来自＜boost程序库完全开发指南&amp;gt;
+noncopyable  在编写一些类的时候，我们通常需要这样的功能－－如禁止类实例的复制和赋值，一般的实现方式就是将copy构造函数或者operator=的属性设置为private 即可．如caffe中就是将使用DISABLE_COPY_AND_ASSIGN(＼),而宏DISABLE_COPY_A">
+  
+    <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sharp&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">my life since 2015.12.19</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-boost_0515" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/14/boost_0515/" class="article-date">
+  <time datetime="2016-05-14T06:28:28.000Z" itemprop="datePublished">2016-05-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      boost_0515
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来说说boost的一些小工具，有一些类，也有一些宏，来自＜boost程序库完全开发指南&gt;</p>
+<h1 id="noncopyable"><a href="#noncopyable" class="headerlink" title="noncopyable"></a>noncopyable</h1><p>  在编写一些类的时候，我们通常需要这样的功能－－如禁止类实例的复制和赋值，一般的实现方式就是将copy构造函数或者operator=的属性设置<br>为private 即可．如caffe中就是将使用DISABLE_COPY_AND_ASSIGN(＼<class name＼="">),<br>而宏DISABLE_COPY_AND_ASSIGN是这样定义的<br>    <code>＃define DISABLE_COPY_AND_ASSIGN(classname) \</code><br>    <code>private: \</code><br>    <code>classname(const classname&amp;); \</code><br>    <code>classname&amp; operator=(const classname&amp;)</code><br>有这样的宏定义还好，如果不使用宏定义，在有很多这样的类的时候，一不小心就会容易犯错，boost提供了一个这样的类noncopyable，只要继承这个类的类无论是何种继承方式，它的实例都不具备复制和赋值功能．<br>当然需要包含头文件 boost/utility.hpp</class></p>
+<h1 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h1><p>包含头文件boost/typeof/typeof.hpp<br>如我们在使用迭代器的时候<br>    <code>std::map&lt;std::string, std::string&gt;::iterator it;</code><br>可以看出这个类型名太长太长，别的有可能更长，可以直接使用　<br>    <code>auto it = vec.begin();</code></p>
+<h1 id="optional"><a href="#optional" class="headerlink" title="optional"></a>optional</h1><p>   暂且不表</p>
+<h1 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h1><p>许多情况下，我们需要为容器初始化或者赋值，填入大量的数据，例如初始化一个vector　里面放入1–n的值，STL虽然提供了添加数据的方法，但是填充的步骤却是单调且乏味的．boost 提供了简单的思路．<br>包含头文件　boost/assign.hpp　并且使用命名空间 boost::assign<br>    <code>vector&lt;int&gt; v;</code><br>    <code>v += 1, 2, 3, 4, 5, 6*6;</code><br>    <code>set&lt;string&gt; s;</code><br>    <code>s += &quot;cpp&quot;, &quot;java&quot;, &quot;c#&quot;, &quot;python&quot;;</code><br>    <code>map&lt;int, std::string&gt; m;</code><br>    <code>m += make_pair(1, &quot;hello&quot;), make_pair(3, &quot;world&quot;); // make_pair, not pair()</code><br>当然使用+=方法可以很容易地实现对std的容器的操作，但是对boost添加的其他容器却是无能为力．这时候就使用operator()的思路吧，我们不能直接使用operator，但是可以使用assign提供的三个辅助函数insert() push_front() push_back()，这些函数可作用于拥有同名函数的容器，接受容器变量作为参数，返回一个list_inserter，它重载了operator(), ＝等操作<br>    <code>vector&lt;int&gt; v;</code><br>    <code>push_back(v) (1)(2)(3)(4)(5); //</code><br>    <code>// push_back(v), 1, 2, 3, 4, 5;</code><br>    <code>// push_back(v)() = 1, 2, 3, 4, 5;</code><br>    <code>map&lt;int, std::string&gt; m;</code><br>    <code>insert(m)(1, &quot;hello&quot;)(2, &quot;world&quot;);</code><br>+= 和()解决了对容器添加大量数据的简便化填充，但有时候我们需要在初始化容器的时候就添加值的时候呢，这时候使用assign提供的list_of() map_list_of() pair_list_of 和tuple_list_of()就可以完成这样的工作．<br>list_of()函数很智能，返回一个匿名的列表，可以赋值给任意容器．<br>    <code>vector&lt;int&gt; v = list_of(1)(2)(3)(4)(5);</code><br>    <code>// v = [1, 2, 3, 4, 5]</code><br>    <code>set&lt;int&gt; s = (list_of(1)(2),3, 4, 5);</code><br>list_of 处理map数据不是很方便，于是map_list_of pair_list_of应运而生<br>    <code>map&lt;int, int&gt; m1 = map_list_of(1, 2)(3, 4)(4, 5);</code></p>
+<p>tuple_list_of 处理boost的容器tuple</p>
+<p>当填充数据的时候，为了避免重复数据数据，assign提供了repeat() repeat_fun() range()等函数<br>repeat函数把第二个参数作为要输入的值，重复第一个参数指定的次数，repeat_fun()同样重复第一个参数次数，第二个参数是一个无参的函数或者函数对象，它返回填入的值，range()则可以把一个序列全部或者部分插入到另一个序列里．<br>    <code>vector&lt;int&gt; v = list_0f(1).repeat(3, 2)(3)(4)(5);</code><br>    <code>// v = [1, 2, 2, 2, 3, 4, 5]</code><br>    <code>multiset&lt;int&gt; ms;</code><br>    <code>insert(ms).repeat_fun(5, &amp;rand).repeat(2, 1), 10;</code><br>    <code>deque&lt;int&gt; d;</code><br>    <code>push_front(d).range(v.begin(), v.end());</code><br>    <code>// d = 1, 2, 2, 2, 3, 4, 5</code><br>assign 不仅支持全部８个stl标准容器(vector string deque list set multiset map multimap)也对stack queue priority_queue<br>因为后三种容器适配器不符合容器的定义，没有insert push_back等函数，不能通过赋值的方式进行填充，只能通过初始化的方式进行填充，并且在list_of表达式最后使用to_adapter()成员函数来适配到非标准器．如果使用逗号的话还得使用括号把整个表达式括起来才能调用to_adapter()<br>    <code>stack&lt;int&gt; stk = (list_of(1), 2, 3, 4).to_adapter();</code><br>    <code>queue&lt;string&gt; q = (list_of(&quot;china&quot;)(&quot;us&quot;)(&quot;ul&quot;)).repeat(2, &quot;russia&quot;).to_adapter();</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="cio71gz6q00006lxlz9dcf8m0" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/05/04/python-file-reading-writing/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">python file reading writing</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/14/boost_0515/">boost_0515</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/04/python-file-reading-writing/">python file reading writing</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/30/blog/">(no title)</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 sharpL<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

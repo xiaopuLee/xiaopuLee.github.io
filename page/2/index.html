@@ -68,6 +68,77 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-gflag_0412" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/gflag_0412/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来说一下google的开源库gflag</p>
+<p>#用途<br>  首先gflag是一个command line parser，是用来解析命令行输入参数的。<br>  例如输入命令行 ./&lt; your app &gt; -year 2016 -month 4</p>
+<p>#如何解析？<br>  首先在全局初始化的时候可以这样定义一个变量<br>    DEFINE_bool(flag, true, “help flag”);<br>  上述语句定义了一个bool变量flag，默认值为true，变量帮助说明为 help flag的语句。在程序中，即可通过访问FLAGS_flag<br>这个变量来访问命令行穿进来的flag的值。是不是很方便？<br>  除了bool值，gflag还支持其他5种数值类型，如int32 int64 uint64 string double。那么是否支持更复杂的类型呢？回答是no，google<br>给出的解释我觉得很赞–他们更愿意将对数据的处理放在程序中，而这时候gflag就只负责解析命令行的参数即可。<br>一段简易的代码。</p>
+<pre><code>#include&lt;iostream&gt;
+#include&lt;gflags/gflags.h&gt;
+
+DEFINE_bool(big_menu, true, &quot;include &apos;advanced&apos; options in the menu listing&quot;);
+DEFINE_string(languages, &quot;english, french, german&quot;, &quot;comma-separated list of languages to offer int the &apos;lang&apos; menu&quot;);
+
+int main(int argc, char** argv)
+{
+   google::ParseCommandLineFlags(&amp;argc, &amp;argv, true);
+   std::cout &lt;&lt; FLAGS_languages &lt;&lt; std::endl;
+   if(FLAGS_big_menu)
+   {
+      std::cout &lt;&lt; &quot;the big menu is true&quot; &lt;&lt; std::endl;
+   }
+   else
+   {
+      std::cout &lt;&lt; &quot;the big menu is false&quot; &lt;&lt; std::endl;
+   }
+   return 0;
+}
+</code></pre><p>#如何通过command line传入参数呢？<br>  所有的flag都可以有以下四中格式，如 –flag value， –flag=value -flag=value -flag value<br>  bool除了以上四种格式，还可以通过–nobig_menu –big_menu来设定。</p>
+<p>  如果不小心同一个参数传入了多次呢？ 如./&lt; your app &gt; -year 2016 -month 4 -year 2013,此时以最好一个传入的为准。</p>
+<p>#如何保证传入的参数的正确性呢？<br>  首先我们需要在使用的时候就要确认好各种参数的类型以及他可能的取值范围。<br>  其次，我们可以通过gflag的validator来做进一步的检测。<br>  看代码。<br>    static bool ValidatePort(const char* flagname, int32 value) {<br>       if (value &gt; 0 &amp;&amp; value &lt; 32768)   // value is ok<br>         return true;<br>       printf(“Invalid value for –%s: %d\n”, flagname, (int)value);<br>       return false;<br>    }<br>    DEFINE_int32(port, 0, “What port to listen on”);<br>    static const bool port_dummy = RegisterFlagValidator(&amp;FLAGS_port, &amp;ValidatePort);<br>   通常，上述validator需要在define 变量后立即register，需要在全局初始化的时候进行。分析上述代码即可知道他将port传入的值和validateport<br>函数绑定在一起，只要传入值即对这个值进行检验，例如在上述代码中，如果value 在（0， 32678）范围内，就会返回true，其他范围返回false，此时如果flag<br>是默认值的话，程序会go die，如果是其他值的话，程序会保留这个值。（待验证）</p>
+<p>#多处使用flag，以及改变flag的默认值</p>
+<p>#showusage 和 showversion</p>
+<pre><code>FLAGS_alsologtostderr = 1;
+// Set version
+gflags::SetVersionString(AS_STRING(CAFFE_VERSION));
+// Usage message.
+gflags::SetUsageMessage(&quot;command line brew\n&quot;
+&quot;usage: caffe &lt;command&gt; &lt;args&gt;\n\n&quot;
+&quot;commands:\n&quot;
+&quot;  train           train or finetune a model\n&quot;
+&quot;  test            score a model\n&quot;
+&quot;  device_query    show GPU diagnostic information\n&quot;
+&quot;  time            benchmark model execution time&quot;);
+</code></pre><p>#其他</p>
+<ol>
+<li>在ubuntu系统中，可以设置环境变量export FLAG_flag = 1 export FLAG_bar = 2<br>然后–fromenv=flag,bar 即可从环境变量中读取值，但是环境中并未设置这样的值的话或者程序中并未设定这样的flag，程序会崩溃。一个折中的<br>方法就是使用tryfromenv=flag，bar</li>
+<li>也可以在文件中设定参数值，如写一个文本文件f，内容如下<br> –nobig_menus<br> –languages=english,french<br>然后通过–flagfile=f 即可访问。</li>
+</ol>
+<p>参考：<br>   <a href="http://gflags.github.io/gflags/" target="_blank" rel="external">http://gflags.github.io/gflags/</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/gflag_0412/" data-id="cio714es4000cuxxlfk6wfvv3" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-gtest" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/30/gtest/" class="article-date">
@@ -150,7 +221,77 @@ delete n;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/gtest/" data-id="cinrj80a8000cmgxlk870tilb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/gtest/" data-id="cio714es5000duxxlnay5d6ej" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-lablog" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/lablog/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1 在caffe.cpp中将添加FLAGS_log_dir = <path＞　可以将日志转移在<path>目录</path＞　可以将日志转移在<path></p>
+<p>minist 数据经验<br> 1 training data使用较大的batch 会相应增加训练时间，带来的利好是测试集的准确率会提升<br>   原因很容易理解嘛，增加了batch的大小，本来就等于总训练数据迭代的次数增加了嘛，但是这种单一地增加maxIter并不一定<br>   能够增加测试机的准确率。<br>   <a href="https://www.zhihu.com/question/32673260" target="_blank" rel="external">https://www.zhihu.com/question/32673260</a> 这里的讨论比较好<br>   batch 256  max about 0.9920<br>   batch 512  max 0.9931<br>   batch 1024 max 0.9928 （相对于512时候，明显慢了很多很多，并且收敛的速度也变慢了好多）</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/lablog/" data-id="cio714es6000euxxlxnsgdqt9" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-blas" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/blas/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> 近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码<br>因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。</p>
+<p>blas以及他的各种衍生包的安装舍去不表。</p>
+<p>blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。<br>因此按照维度的增加，blas将运算分为三个level</p>
+<blockquote>
+<p>向量与向量的运算<br>矩阵和向量的运算<br>矩阵和矩阵的运算</p>
+</blockquote>
+<p>（由于太多，现在只了解用到部分，其余部分随用随添加）</p>
+<ol>
+<li>level1 向量向量运算<br>cblas_?asum  ？可取s, d, sc, dz 作用是Sum of vector magnitudes  （参数）</li>
+<li>level2 矩阵向量运算</li>
+<li><p>level3 矩阵矩阵运算<br>cblas<em>?gemm  ？ 可取s, d, c, z 用作一般矩阵的乘法<br>void cblas</em>？gemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, </p>
+<pre><code>const MKL_INT m, const MKL_INT n, const MKL_INT k, const float alpha, const float *a, 
+const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c, const MKL_INT ldc);
+</code></pre><p>C := alpha<em>op(A)</em>op(B) + beta*C,<br>alpha beta都是scalar A,B,C是矩阵 A（m×k） B（kxn） C（mxn）<br>如果transa=CblasNoTrans, op(A) = A， transa=CblasTrans, then op(A) = AT，transa=CblasConjTrans, then op(A) = AH.<br>m 指定的是op（A）以及C的行， n指定的是op(B)和C的列， k是op（A）的列和op（B）<br>lda 之类指定的是相应向量的leading demension 比如rowmajor下，transa=CblasNoTrans，lda&gt;=max(1, k)</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/blas/" data-id="cio714erj0002uxxl11j45o52" class="article-share-link">Share</a>
       
       
     </footer>
@@ -197,7 +338,7 @@ delete n;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/iomanip/" data-id="cinrj80a9000dmgxlyl7wq761" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/iomanip/" data-id="cio714es8000iuxxllh9irwpr" class="article-share-link">Share</a>
       
       
     </footer>
@@ -207,9 +348,9 @@ delete n;
 
 
   
-    <article id="post-lablog" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-advancedGoogleTest" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/lablog/" class="article-date">
+    <a href="/2016/04/30/advancedGoogleTest/" class="article-date">
   <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
 </a>
     
@@ -219,110 +360,16 @@ delete n;
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>1 在caffe.cpp中将添加FLAGS_log_dir = <path＞　可以将日志转移在<path>目录</path＞　可以将日志转移在<path></p>
-<p>minist 数据经验<br> 1 training data使用较大的batch 会相应增加训练时间，带来的利好是测试集的准确率会提升<br>   原因很容易理解嘛，增加了batch的大小，本来就等于总训练数据迭代的次数增加了嘛，但是这种单一地增加maxIter并不一定<br>   能够增加测试机的准确率。<br>   <a href="https://www.zhihu.com/question/32673260" target="_blank" rel="external">https://www.zhihu.com/question/32673260</a> 这里的讨论比较好<br>   batch 256  max about 0.9920<br>   batch 512  max 0.9931<br>   batch 1024 max 0.9928 （相对于512时候，明显慢了很多很多，并且收敛的速度也变慢了好多）</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/lablog/" data-id="cinrj80aa000emgxln89b11po" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-gflag_0412" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/gflag_0412/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天来说一下google的开源库gflag</p>
-<p>#用途<br>  首先gflag是一个command line parser，是用来解析命令行输入参数的。<br>  例如输入命令行 ./&lt; your app &gt; -year 2016 -month 4</p>
-<p>#如何解析？<br>  首先在全局初始化的时候可以这样定义一个变量<br>    DEFINE_bool(flag, true, “help flag”);<br>  上述语句定义了一个bool变量flag，默认值为true，变量帮助说明为 help flag的语句。在程序中，即可通过访问FLAGS_flag<br>这个变量来访问命令行穿进来的flag的值。是不是很方便？<br>  除了bool值，gflag还支持其他5种数值类型，如int32 int64 uint64 string double。那么是否支持更复杂的类型呢？回答是no，google<br>给出的解释我觉得很赞–他们更愿意将对数据的处理放在程序中，而这时候gflag就只负责解析命令行的参数即可。<br>一段简易的代码。</p>
-<pre><code>#include&lt;iostream&gt;
-#include&lt;gflags/gflags.h&gt;
-
-DEFINE_bool(big_menu, true, &quot;include &apos;advanced&apos; options in the menu listing&quot;);
-DEFINE_string(languages, &quot;english, french, german&quot;, &quot;comma-separated list of languages to offer int the &apos;lang&apos; menu&quot;);
-
-int main(int argc, char** argv)
-{
-   google::ParseCommandLineFlags(&amp;argc, &amp;argv, true);
-   std::cout &lt;&lt; FLAGS_languages &lt;&lt; std::endl;
-   if(FLAGS_big_menu)
-   {
-      std::cout &lt;&lt; &quot;the big menu is true&quot; &lt;&lt; std::endl;
-   }
-   else
-   {
-      std::cout &lt;&lt; &quot;the big menu is false&quot; &lt;&lt; std::endl;
-   }
-   return 0;
-}
-</code></pre><p>#如何通过command line传入参数呢？<br>  所有的flag都可以有以下四中格式，如 –flag value， –flag=value -flag=value -flag value<br>  bool除了以上四种格式，还可以通过–nobig_menu –big_menu来设定。</p>
-<p>  如果不小心同一个参数传入了多次呢？ 如./&lt; your app &gt; -year 2016 -month 4 -year 2013,此时以最好一个传入的为准。</p>
-<p>#如何保证传入的参数的正确性呢？<br>  首先我们需要在使用的时候就要确认好各种参数的类型以及他可能的取值范围。<br>  其次，我们可以通过gflag的validator来做进一步的检测。<br>  看代码。<br>    static bool ValidatePort(const char* flagname, int32 value) {<br>       if (value &gt; 0 &amp;&amp; value &lt; 32768)   // value is ok<br>         return true;<br>       printf(“Invalid value for –%s: %d\n”, flagname, (int)value);<br>       return false;<br>    }<br>    DEFINE_int32(port, 0, “What port to listen on”);<br>    static const bool port_dummy = RegisterFlagValidator(&amp;FLAGS_port, &amp;ValidatePort);<br>   通常，上述validator需要在define 变量后立即register，需要在全局初始化的时候进行。分析上述代码即可知道他将port传入的值和validateport<br>函数绑定在一起，只要传入值即对这个值进行检验，例如在上述代码中，如果value 在（0， 32678）范围内，就会返回true，其他范围返回false，此时如果flag<br>是默认值的话，程序会go die，如果是其他值的话，程序会保留这个值。（待验证）</p>
-<p>#多处使用flag，以及改变flag的默认值</p>
-<p>#showusage 和 showversion</p>
-<pre><code>FLAGS_alsologtostderr = 1;
-// Set version
-gflags::SetVersionString(AS_STRING(CAFFE_VERSION));
-// Usage message.
-gflags::SetUsageMessage(&quot;command line brew\n&quot;
-&quot;usage: caffe &lt;command&gt; &lt;args&gt;\n\n&quot;
-&quot;commands:\n&quot;
-&quot;  train           train or finetune a model\n&quot;
-&quot;  test            score a model\n&quot;
-&quot;  device_query    show GPU diagnostic information\n&quot;
-&quot;  time            benchmark model execution time&quot;);
-</code></pre><p>#其他</p>
+        <p>此为gtest的第二篇，来说一些高级技巧</p>
+<p>基本翻译自这里<a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md" target="_blank" rel="external">https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md</a></p>
 <ol>
-<li>在ubuntu系统中，可以设置环境变量export FLAG_flag = 1 export FLAG_bar = 2<br>然后–fromenv=flag,bar 即可从环境变量中读取值，但是环境中并未设置这样的值的话或者程序中并未设定这样的flag，程序会崩溃。一个折中的<br>方法就是使用tryfromenv=flag，bar</li>
-<li>也可以在文件中设定参数值，如写一个文本文件f，内容如下<br> –nobig_menus<br> –languages=english,french<br>然后通过–flagfile=f 即可访问。</li>
+<li>more Assertions</li>
 </ol>
-<p>参考：<br>   <a href="http://gflags.github.io/gflags/" target="_blank" rel="external">http://gflags.github.io/gflags/</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/gflag_0412/" data-id="cinrj80ab000gmgxl5ulz72f5" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-caffe_blob" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/caffe_blob/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/caffe_blob/" data-id="cinrj80970000mgxlg2uy3v02" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/advancedGoogleTest/" data-id="cio714erm0003uxxlr6g68bjz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -432,7 +479,45 @@ return 0;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/proto/" data-id="cinrj80ae000jmgxljg0vsekn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/proto/" data-id="cio714esa000kuxxld5uygbtc" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-debug_0412" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/debug_0412/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用gdb进行调试</p>
+<p>#缘起<br>   要在ubuntu下工作，又不太想把程序都放在window上写再来回转着调试，所以就想联系在linux系统里使用gdb进行调试</p>
+<p>#相信使用</p>
+<ol>
+<li>编译时加入debug信息, 使用参数-g即可。<br>g++ -g main.cpp -0 main</li>
+<li><p>启动测试<br>可以使用gdb main，使用-tui 参数可以分屏显示代码，比参数l好用的要死<br>也可以使用 gdb 打开调试窗口后，使用file app来打开app进行调试</p>
+<p>set args 来设定程序运行的参数<br>也可以gdb之后，使用run &lt;参数列表&gt;<br>show args显示参数</p>
+</li>
+<li><p>各种参数<br>l list 列出当前行前后个5行代码 list n1 n2 列出n1 n2 之间的代码<br>c continue 继续运行<br>r run<br>b break 设置断点 后面可以接行号 以及函数名字；也可以条件断点break 46 if testsize==100；break file：N 设置file的N行为断点<br>p <var name=""> 打印后面变量的名字， print &amp;var 打印变量的地址；如果a是一个数组，10个元素，如果要显示则： print *a@10<br>n next 单步运行一次， next N，执行下N步</var></p>
+<p>s 跳入函数内部<br>finish 执行完当前运行的函数，返回调用他的函数<br>j jump 5 跳转到第五行执行完毕之后，如果之后没有断点，则继续执行<br>wathch i！=10<br>info breakpoints 简写info break 会显示当前所有的断点，断点号断点位置。<br>delete N 删除N号断点； delete 删除所有断点<br>clear N 清除行N以上所有断点。<br>whatis var 显示变量var的类型</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/debug_0412/" data-id="cio714eru0009uxxl3ai3id0u" class="article-share-link">Share</a>
       
       
     </footer>
@@ -497,19 +582,19 @@ return 0;
       <ul>
         
           <li>
+            <a href="/2016/05/14/boost_0515/">boost_0515</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/04/python-file-reading-writing/">python file reading writing</a>
+          </li>
+        
+          <li>
             <a href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
           </li>
         
           <li>
             <a href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/30/blas/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/30/advancedGoogleTest/">(no title)</a>
           </li>
         
           <li>

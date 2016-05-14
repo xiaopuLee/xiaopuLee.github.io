@@ -68,6 +68,85 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-boost_0515" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/14/boost_0515/" class="article-date">
+  <time datetime="2016-05-14T06:28:28.000Z" itemprop="datePublished">2016-05-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/14/boost_0515/">boost_0515</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来说说boost的一些小工具，有一些类，也有一些宏，来自＜boost程序库完全开发指南&gt;</p>
+<h1 id="noncopyable"><a href="#noncopyable" class="headerlink" title="noncopyable"></a>noncopyable</h1><p>  在编写一些类的时候，我们通常需要这样的功能－－如禁止类实例的复制和赋值，一般的实现方式就是将copy构造函数或者operator=的属性设置<br>为private 即可．如caffe中就是将使用DISABLE_COPY_AND_ASSIGN(＼<class name＼="">),<br>而宏DISABLE_COPY_AND_ASSIGN是这样定义的<br>    <code>＃define DISABLE_COPY_AND_ASSIGN(classname) \</code><br>    <code>private: \</code><br>    <code>classname(const classname&amp;); \</code><br>    <code>classname&amp; operator=(const classname&amp;)</code><br>有这样的宏定义还好，如果不使用宏定义，在有很多这样的类的时候，一不小心就会容易犯错，boost提供了一个这样的类noncopyable，只要继承这个类的类无论是何种继承方式，它的实例都不具备复制和赋值功能．<br>当然需要包含头文件 boost/utility.hpp</class></p>
+<h1 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h1><p>包含头文件boost/typeof/typeof.hpp<br>如我们在使用迭代器的时候<br>    <code>std::map&lt;std::string, std::string&gt;::iterator it;</code><br>可以看出这个类型名太长太长，别的有可能更长，可以直接使用　<br>    <code>auto it = vec.begin();</code></p>
+<h1 id="optional"><a href="#optional" class="headerlink" title="optional"></a>optional</h1><p>   暂且不表</p>
+<h1 id="assign"><a href="#assign" class="headerlink" title="assign"></a>assign</h1><p>许多情况下，我们需要为容器初始化或者赋值，填入大量的数据，例如初始化一个vector　里面放入1–n的值，STL虽然提供了添加数据的方法，但是填充的步骤却是单调且乏味的．boost 提供了简单的思路．<br>包含头文件　boost/assign.hpp　并且使用命名空间 boost::assign<br>    <code>vector&lt;int&gt; v;</code><br>    <code>v += 1, 2, 3, 4, 5, 6*6;</code><br>    <code>set&lt;string&gt; s;</code><br>    <code>s += &quot;cpp&quot;, &quot;java&quot;, &quot;c#&quot;, &quot;python&quot;;</code><br>    <code>map&lt;int, std::string&gt; m;</code><br>    <code>m += make_pair(1, &quot;hello&quot;), make_pair(3, &quot;world&quot;); // make_pair, not pair()</code><br>当然使用+=方法可以很容易地实现对std的容器的操作，但是对boost添加的其他容器却是无能为力．这时候就使用operator()的思路吧，我们不能直接使用operator，但是可以使用assign提供的三个辅助函数insert() push_front() push_back()，这些函数可作用于拥有同名函数的容器，接受容器变量作为参数，返回一个list_inserter，它重载了operator(), ＝等操作<br>    <code>vector&lt;int&gt; v;</code><br>    <code>push_back(v) (1)(2)(3)(4)(5); //</code><br>    <code>// push_back(v), 1, 2, 3, 4, 5;</code><br>    <code>// push_back(v)() = 1, 2, 3, 4, 5;</code><br>    <code>map&lt;int, std::string&gt; m;</code><br>    <code>insert(m)(1, &quot;hello&quot;)(2, &quot;world&quot;);</code><br>+= 和()解决了对容器添加大量数据的简便化填充，但有时候我们需要在初始化容器的时候就添加值的时候呢，这时候使用assign提供的list_of() map_list_of() pair_list_of 和tuple_list_of()就可以完成这样的工作．<br>list_of()函数很智能，返回一个匿名的列表，可以赋值给任意容器．<br>    <code>vector&lt;int&gt; v = list_of(1)(2)(3)(4)(5);</code><br>    <code>// v = [1, 2, 3, 4, 5]</code><br>    <code>set&lt;int&gt; s = (list_of(1)(2),3, 4, 5);</code><br>list_of 处理map数据不是很方便，于是map_list_of pair_list_of应运而生<br>    <code>map&lt;int, int&gt; m1 = map_list_of(1, 2)(3, 4)(4, 5);</code></p>
+<p>tuple_list_of 处理boost的容器tuple</p>
+<p>当填充数据的时候，为了避免重复数据数据，assign提供了repeat() repeat_fun() range()等函数<br>repeat函数把第二个参数作为要输入的值，重复第一个参数指定的次数，repeat_fun()同样重复第一个参数次数，第二个参数是一个无参的函数或者函数对象，它返回填入的值，range()则可以把一个序列全部或者部分插入到另一个序列里．<br>    <code>vector&lt;int&gt; v = list_0f(1).repeat(3, 2)(3)(4)(5);</code><br>    <code>// v = [1, 2, 2, 2, 3, 4, 5]</code><br>    <code>multiset&lt;int&gt; ms;</code><br>    <code>insert(ms).repeat_fun(5, &amp;rand).repeat(2, 1), 10;</code><br>    <code>deque&lt;int&gt; d;</code><br>    <code>push_front(d).range(v.begin(), v.end());</code><br>    <code>// d = 1, 2, 2, 2, 3, 4, 5</code><br>assign 不仅支持全部８个stl标准容器(vector string deque list set multiset map multimap)也对stack queue priority_queue<br>因为后三种容器适配器不符合容器的定义，没有insert push_back等函数，不能通过赋值的方式进行填充，只能通过初始化的方式进行填充，并且在list_of表达式最后使用to_adapter()成员函数来适配到非标准器．如果使用逗号的话还得使用括号把整个表达式括起来才能调用to_adapter()<br>    <code>stack&lt;int&gt; stk = (list_of(1), 2, 3, 4).to_adapter();</code><br>    <code>queue&lt;string&gt; q = (list_of(&quot;china&quot;)(&quot;us&quot;)(&quot;ul&quot;)).repeat(2, &quot;russia&quot;).to_adapter();</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="cio71gz6q00006lxlz9dcf8m0" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-python-file-reading-writing" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/04/python-file-reading-writing/" class="article-date">
+  <time datetime="2016-05-04T13:12:24.000Z" itemprop="datePublished">2016-05-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/04/python-file-reading-writing/">python file reading writing</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/04/python-file-reading-writing/" data-id="cio714es7000guxxltgwr79nj" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-data_transformer" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/05/03/data_transformer/" class="article-date">
@@ -114,7 +193,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="cinrj809x0008mgxlgiyfyshf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="cio714ers0008uxxlcr151zgh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
@@ -152,80 +231,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/03/source-posts-data-transformer-md/" data-id="cinrj80ac000imgxld3lcumgp" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-blas" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/blas/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p> 近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码<br>因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。</p>
-<p>blas以及他的各种衍生包的安装舍去不表。</p>
-<p>blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。<br>因此按照维度的增加，blas将运算分为三个level</p>
-<blockquote>
-<p>向量与向量的运算<br>矩阵和向量的运算<br>矩阵和矩阵的运算</p>
-</blockquote>
-<p>（由于太多，现在只了解用到部分，其余部分随用随添加）</p>
-<ol>
-<li>level1 向量向量运算<br>cblas_?asum  ？可取s, d, sc, dz 作用是Sum of vector magnitudes  （参数）</li>
-<li>level2 矩阵向量运算</li>
-<li><p>level3 矩阵矩阵运算<br>cblas<em>?gemm  ？ 可取s, d, c, z 用作一般矩阵的乘法<br>void cblas</em>？gemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, </p>
-<pre><code>const MKL_INT m, const MKL_INT n, const MKL_INT k, const float alpha, const float *a, 
-const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c, const MKL_INT ldc);
-</code></pre><p>C := alpha<em>op(A)</em>op(B) + beta*C,<br>alpha beta都是scalar A,B,C是矩阵 A（m×k） B（kxn） C（mxn）<br>如果transa=CblasNoTrans, op(A) = A， transa=CblasTrans, then op(A) = AT，transa=CblasConjTrans, then op(A) = AH.<br>m 指定的是op（A）以及C的行， n指定的是op(B)和C的列， k是op（A）的列和op（B）<br>lda 之类指定的是相应向量的leading demension 比如rowmajor下，transa=CblasNoTrans，lda&gt;=max(1, k)</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/blas/" data-id="cinrj809o0002mgxloorxp7ds" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-advancedGoogleTest" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/advancedGoogleTest/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>此为gtest的第二篇，来说一些高级技巧</p>
-<p>基本翻译自这里<a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md" target="_blank" rel="external">https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md</a></p>
-<ol>
-<li>more Assertions</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/advancedGoogleTest/" data-id="cinrj809q0003mgxlly5dq554" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/03/source-posts-data-transformer-md/" data-id="cio714es9000juxxlpewqgbpq" class="article-share-link">Share</a>
       
       
     </footer>
@@ -264,104 +270,7 @@ const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/blog/" data-id="cinrj809r0004mgxl7mdi5pop" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-boost_function" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/boost_function/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今儿来说说boost 的 function</p>
-<p>1 最简单的用法<br> 看代码<br> `</p>
-<p> #include<boost function.hpp=""></boost></p>
-<p> #include<iostream></iostream></p>
-<p> int fun(int a, int b)<br> {<br>    return a + b;<br> }<br> double fund(double a, double b)<br> {<br>    return a － b;<br> }<br> int fun2(int a, int b)<br> {<br>    return a - b;<br> }</p>
-<p> int main()<br> {<br>   boost::function<int (int,="" int)=""> i_i_i;<br>   i_i_i = &fun;<br>   std::cout &lt;&lt; fun(1, 2) &lt;&lt; “ “<br>     &lt;&lt; i_i_i(1, 2) &lt;&lt; std::endl;<br>   // 1) 3 3<br>　　　i_i_i = &fund;<br>   std::cout &lt;&lt; fund(3.1, 4.1) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(3.1, 4.1) &lt;&lt; std::endl;<br>   // 2)7.2 7<br>   i_i_i = &fun2;<br>   std::cout &lt;&lt; fun2(5, 6) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(5, 6) &lt;&lt;　std::endl;<br>   // 3) -1 -1<br>   return 0;<br> }<br> `<br> 从上述代码可以看出其实function<int (int,="" int)=""> 是定义了一种类型，<br>这种类型的对象可以执行一类返回值是int 并且有且具有两个int 参数的函数.</int></int></p>
-<p>从2)处的输出值可以推测，上面那句i_i_i=&amp;fund…….（留待继续探究）</p>
-<ol>
-<li>跟类结合在一块儿时候</li>
-</ol>
-<p>　尤其注意要传类指针<br> <code>class X
- {
-    public:
-    int foo(int x, int b)
-        {
-           return a + b;
-        }
- }
- boost::function&lt;int (X*, int, int)&gt; f;
- f = &amp;X::foo;
- std::cout &lt;&lt; f(1, 2) &lt;&lt; std::endl;
- // 3</code></p>
-<ol>
-<li>跟bind函数一块儿起作用</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/boost_function/" data-id="cinrj809t0005mgxljf37o1zw" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-caffe_syncedMem" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/caffe_syncedMem/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天来说说caffe中的底层类SyncedMemory</p>
-<p>首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。</p>
-<ol>
-<li><p>SyncedMemory的成员变量</p>
-<p><code>void* cpu_ptr_;
-void* gpu_ptr_;
-size_t size_;
-SyncedHead head_; //enum SyncedHead { UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED };
-bool own_cpu_data_;
-bool cpu_malloc_use_cuda_;
-bool own_gpu_data_;
-int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变量的具体含义，尤其需要注意的是own_[c,g]pu<em>data</em>,这两个变量标示的是<br>如果相对应的[c,g]pu<em>ptr</em>指向的数据是通过malloc等方式申请的话，其值为true，通过set_方法赋值时（与别的变量共享），其值为false<br>从而在变量销毁的时候不会将共享数据的数据释放掉。<br>cpu_malloc_use<em>cuda</em> 变量标示的是在申请cpu内存的时候是否使用的是cuda的相应方法，使用cuda的方法能够申请得到pinned memory,是的<br>在多卡进行训练时候，提高数据copy的效率使得large models on multi-gpu 更加稳定。</p>
-</li>
-<li><p>SyncedMemory的成员函数<br>private 成员函数,<br><code>void to_cpu();
- void to_gpu();</code><br>这俩函数是类内部函数，实现的是cpu和gpu数据的同步。值的注意的地方是在 在数据传输过程中，数据head_的更新。</p>
-<p>接口函数<br>`<br>const void<em> cpu_data();<br>void</em> mutable_cpu_data();<br>void set_cpu_data(void* data);</p>
-<p>const void<em> gpu_data();<br>void</em> mutable_gpu_data();<br>void set_gpu_data(void* data);</p>
-<p>size_t size();<br>SyncedHead head();<br>void async_gpu_push(const cudaStream_t&amp; stream);<br>`<br>很简易的接口，从名字就可以知道他们的作用。</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/caffe_syncedMem/" data-id="cinrj809u0006mgxlr27j7zbs" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/blog/" data-id="cio714ero0004uxxle0gz9sdp" class="article-share-link">Share</a>
       
       
     </footer>
@@ -428,7 +337,130 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="cinrj809w0007mgxld78bdf59" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="cio714erp0005uxxlecgv04e6" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-boost_function" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/boost_function/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今儿来说说boost 的 function</p>
+<p>1 最简单的用法<br> 看代码<br> `</p>
+<p> #include<boost function.hpp=""></boost></p>
+<p> #include<iostream></iostream></p>
+<p> int fun(int a, int b)<br> {<br>    return a + b;<br> }<br> double fund(double a, double b)<br> {<br>    return a － b;<br> }<br> int fun2(int a, int b)<br> {<br>    return a - b;<br> }</p>
+<p> int main()<br> {<br>   boost::function<int (int,="" int)=""> i_i_i;<br>   i_i_i = &fun;<br>   std::cout &lt;&lt; fun(1, 2) &lt;&lt; “ “<br>     &lt;&lt; i_i_i(1, 2) &lt;&lt; std::endl;<br>   // 1) 3 3<br>　　　i_i_i = &fund;<br>   std::cout &lt;&lt; fund(3.1, 4.1) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(3.1, 4.1) &lt;&lt; std::endl;<br>   // 2)7.2 7<br>   i_i_i = &fun2;<br>   std::cout &lt;&lt; fun2(5, 6) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(5, 6) &lt;&lt;　std::endl;<br>   // 3) -1 -1<br>   return 0;<br> }<br> `<br> 从上述代码可以看出其实function<int (int,="" int)=""> 是定义了一种类型，<br>这种类型的对象可以执行一类返回值是int 并且有且具有两个int 参数的函数.</int></int></p>
+<p>从2)处的输出值可以推测，上面那句i_i_i=&amp;fund…….（留待继续探究）</p>
+<ol>
+<li>跟类结合在一块儿时候</li>
+</ol>
+<p>　尤其注意要传类指针<br> <code>class X
+ {
+    public:
+    int foo(int x, int b)
+        {
+           return a + b;
+        }
+ }
+ boost::function&lt;int (X*, int, int)&gt; f;
+ f = &amp;X::foo;
+ std::cout &lt;&lt; f(1, 2) &lt;&lt; std::endl;
+ // 3</code></p>
+<ol>
+<li>跟bind函数一块儿起作用</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/boost_function/" data-id="cio714erq0006uxxl6o93duq3" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-caffe_syncedMem" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/caffe_syncedMem/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来说说caffe中的底层类SyncedMemory</p>
+<p>首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。</p>
+<ol>
+<li><p>SyncedMemory的成员变量</p>
+<p><code>void* cpu_ptr_;
+void* gpu_ptr_;
+size_t size_;
+SyncedHead head_; //enum SyncedHead { UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED };
+bool own_cpu_data_;
+bool cpu_malloc_use_cuda_;
+bool own_gpu_data_;
+int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变量的具体含义，尤其需要注意的是own_[c,g]pu<em>data</em>,这两个变量标示的是<br>如果相对应的[c,g]pu<em>ptr</em>指向的数据是通过malloc等方式申请的话，其值为true，通过set_方法赋值时（与别的变量共享），其值为false<br>从而在变量销毁的时候不会将共享数据的数据释放掉。<br>cpu_malloc_use<em>cuda</em> 变量标示的是在申请cpu内存的时候是否使用的是cuda的相应方法，使用cuda的方法能够申请得到pinned memory,是的<br>在多卡进行训练时候，提高数据copy的效率使得large models on multi-gpu 更加稳定。</p>
+</li>
+<li><p>SyncedMemory的成员函数<br>private 成员函数,<br><code>void to_cpu();
+ void to_gpu();</code><br>这俩函数是类内部函数，实现的是cpu和gpu数据的同步。值的注意的地方是在 在数据传输过程中，数据head_的更新。</p>
+<p>接口函数<br>`<br>const void<em> cpu_data();<br>void</em> mutable_cpu_data();<br>void set_cpu_data(void* data);</p>
+<p>const void<em> gpu_data();<br>void</em> mutable_gpu_data();<br>void set_gpu_data(void* data);</p>
+<p>size_t size();<br>SyncedHead head();<br>void async_gpu_push(const cudaStream_t&amp; stream);<br>`<br>很简易的接口，从名字就可以知道他们的作用。</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/caffe_syncedMem/" data-id="cio714err0007uxxl77y28a9i" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-caffe_blob" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/30/caffe_blob/" class="article-date">
+  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/30/caffe_blob/" data-id="cio714er20000uxxl7y9pm0tk" class="article-share-link">Share</a>
       
       
     </footer>
@@ -454,45 +486,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="cinrj809b0001mgxlwv9hld0m" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-debug_0412" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/debug_0412/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>使用gdb进行调试</p>
-<p>#缘起<br>   要在ubuntu下工作，又不太想把程序都放在window上写再来回转着调试，所以就想联系在linux系统里使用gdb进行调试</p>
-<p>#相信使用</p>
-<ol>
-<li>编译时加入debug信息, 使用参数-g即可。<br>g++ -g main.cpp -0 main</li>
-<li><p>启动测试<br>可以使用gdb main，使用-tui 参数可以分屏显示代码，比参数l好用的要死<br>也可以使用 gdb 打开调试窗口后，使用file app来打开app进行调试</p>
-<p>set args 来设定程序运行的参数<br>也可以gdb之后，使用run &lt;参数列表&gt;<br>show args显示参数</p>
-</li>
-<li><p>各种参数<br>l list 列出当前行前后个5行代码 list n1 n2 列出n1 n2 之间的代码<br>c continue 继续运行<br>r run<br>b break 设置断点 后面可以接行号 以及函数名字；也可以条件断点break 46 if testsize==100；break file：N 设置file的N行为断点<br>p <var name=""> 打印后面变量的名字， print &amp;var 打印变量的地址；如果a是一个数组，10个元素，如果要显示则： print *a@10<br>n next 单步运行一次， next N，执行下N步</var></p>
-<p>s 跳入函数内部<br>finish 执行完当前运行的函数，返回调用他的函数<br>j jump 5 跳转到第五行执行完毕之后，如果之后没有断点，则继续执行<br>wathch i！=10<br>info breakpoints 简写info break 会显示当前所有的断点，断点号断点位置。<br>delete N 删除N号断点； delete 删除所有断点<br>clear N 清除行N以上所有断点。<br>whatis var 显示变量var的类型</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/debug_0412/" data-id="cinrj809z0009mgxllghaug4e" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="cio714er60001uxxlqgjhycmr" class="article-share-link">Share</a>
       
       
     </footer>
@@ -557,19 +551,19 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
       <ul>
         
           <li>
+            <a href="/2016/05/14/boost_0515/">boost_0515</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/04/python-file-reading-writing/">python file reading writing</a>
+          </li>
+        
+          <li>
             <a href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
           </li>
         
           <li>
             <a href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/30/blas/">(no title)</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/30/advancedGoogleTest/">(no title)</a>
           </li>
         
           <li>
