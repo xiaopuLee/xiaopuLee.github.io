@@ -5,22 +5,25 @@
   
   <title>sharp&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
-blas以及他的各种衍生包的安装舍去不表。
-blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
+  <meta name="description" content="title: boost_arraydate: 2016-05-15 06:16:37
+#boost array
+头文件是　boost/array.hpp
+简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如arrayarray 是模板类，可以使用　boost::array&amp;lt;int, 10&amp;gt; arr;来声明一个元素类型为int，包含10个元素的数组．array没什么特">
 <meta property="og:type" content="article">
 <meta property="og:title" content="sharp's blog">
-<meta property="og:url" content="http://yoursite.com/2016/04/30/blas/index.html">
+<meta property="og:url" content="http://yoursite.com/2016/05/15/boost_array/index.html">
 <meta property="og:site_name" content="sharp's blog">
-<meta property="og:description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
-blas以及他的各种衍生包的安装舍去不表。
-blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
-<meta property="og:updated_time" content="2016-04-30T15:13:37.400Z">
+<meta property="og:description" content="title: boost_arraydate: 2016-05-15 06:16:37
+#boost array
+头文件是　boost/array.hpp
+简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如arrayarray 是模板类，可以使用　boost::array&amp;lt;int, 10&amp;gt; arr;来声明一个元素类型为int，包含10个元素的数组．array没什么特">
+<meta property="og:updated_time" content="2016-05-15T11:58:28.266Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sharp's blog">
-<meta name="twitter:description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
-blas以及他的各种衍生包的安装舍去不表。
-blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
+<meta name="twitter:description" content="title: boost_arraydate: 2016-05-15 06:16:37
+#boost array
+头文件是　boost/array.hpp
+简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如arrayarray 是模板类，可以使用　boost::array&amp;lt;int, 10&amp;gt; arr;来声明一个元素类型为int，包含10个元素的数组．array没什么特">
   
     <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
   
@@ -73,10 +76,10 @@ blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-blas" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-boost_array" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/blas/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
+    <a href="/2016/05/15/boost_array/" class="article-date">
+  <time datetime="2016-05-15T11:58:28.270Z" itemprop="datePublished">2016-05-15</time>
 </a>
     
   </div>
@@ -85,27 +88,19 @@ blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p> 近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码<br>因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。</p>
-<p>blas以及他的各种衍生包的安装舍去不表。</p>
-<p>blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。<br>因此按照维度的增加，blas将运算分为三个level</p>
-<blockquote>
-<p>向量与向量的运算<br>矩阵和向量的运算<br>矩阵和矩阵的运算</p>
-</blockquote>
-<p>（由于太多，现在只了解用到部分，其余部分随用随添加）</p>
-<ol>
-<li>level1 向量向量运算<br>cblas_?asum  ？可取s, d, sc, dz 作用是Sum of vector magnitudes  （参数）</li>
-<li>level2 矩阵向量运算</li>
-<li><p>level3 矩阵矩阵运算<br>cblas<em>?gemm  ？ 可取s, d, c, z 用作一般矩阵的乘法<br>void cblas</em>？gemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, </p>
-<pre><code>const MKL_INT m, const MKL_INT n, const MKL_INT k, const float alpha, const float *a, 
-const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c, const MKL_INT ldc);
-</code></pre><p>C := alpha<em>op(A)</em>op(B) + beta*C,<br>alpha beta都是scalar A,B,C是矩阵 A（m×k） B（kxn） C（mxn）<br>如果transa=CblasNoTrans, op(A) = A， transa=CblasTrans, then op(A) = AT，transa=CblasConjTrans, then op(A) = AH.<br>m 指定的是op（A）以及C的行， n指定的是op(B)和C的列， k是op（A）的列和op（B）<br>lda 之类指定的是相应向量的leading demension 比如rowmajor下，transa=CblasNoTrans，lda&gt;=max(1, k)</p>
-</li>
-</ol>
+        <hr>
+<p>title: boost_array<br>date: 2016-05-15 06:16:37</p>
+<p>#boost array</p>
+<p>头文件是　boost/array.hpp</p>
+<p>简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如array<br>array 是模板类，可以使用　<br><code>boost::array&lt;int, 10&gt; arr;</code><br>来声明一个元素类型为int，包含10个元素的数组．<br>array没什么特别的地方，就是将c中的数组给封装起来了，提供了迭代器这样的东西，无他．</p>
+<p>一起来看一下array的成员函数</p>
+<p><code>iterator begin();</code><br><code>iterator end()</code><br><code>reference operator[](size_type i);</code><br><code>reference at(size_type i)</code><br><code>reference front()</code><br><code>reference back()</code><br><code>static size_type size()</code><br><code>static bool empty()</code><br><code>static bool max_size()</code><br><code>T* data()</code><br><code>T* c_array()</code><br><code>void swap(array&lt;T, N&gt;&amp; y)</code><br><code>void assign(const T&amp; value);</code><br><code>void fill(const T&amp; value);</code></p>
+<p>跟vector的接口大致一样，fill assign都是将value填充数组<br>array 可以使用boost assign里面的list_of来初始化<br><code>boost::array&lt;int, 10&gt; arr;</code><br><code>arr = list_of(1)(2)(3)(4)(5)(6)(7)(8)(9)(10);</code><br>但不能用push_back insert 等其他方法来更新值．</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/blas/" data-id="cio8j33c40002cmxlu4dx94hi" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/05/15/boost_array/" data-id="cio8j33c70005cmxl9nzna141" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -114,19 +109,10 @@ const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c
     
 <nav id="article-nav">
   
-    <a href="/2016/04/30/caffe_blob/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          (no title)
-        
-      </div>
-    </a>
   
-  
-    <a href="/2016/04/30/boost_function/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2016/05/14/boost_0515/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title"></div>
+      <div class="article-nav-title">boost_0515</div>
     </a>
   
 </nav>

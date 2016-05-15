@@ -55,9 +55,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -67,6 +67,40 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-boost_array" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/15/boost_array/" class="article-date">
+  <time datetime="2016-05-15T11:58:28.270Z" itemprop="datePublished">2016-05-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <hr>
+<p>title: boost_array<br>date: 2016-05-15 06:16:37</p>
+<p>#boost array</p>
+<p>头文件是　boost/array.hpp</p>
+<p>简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如array<br>array 是模板类，可以使用　<br><code>boost::array&lt;int, 10&gt; arr;</code><br>来声明一个元素类型为int，包含10个元素的数组．<br>array没什么特别的地方，就是将c中的数组给封装起来了，提供了迭代器这样的东西，无他．</p>
+<p>一起来看一下array的成员函数</p>
+<p><code>iterator begin();</code><br><code>iterator end()</code><br><code>reference operator[](size_type i);</code><br><code>reference at(size_type i)</code><br><code>reference front()</code><br><code>reference back()</code><br><code>static size_type size()</code><br><code>static bool empty()</code><br><code>static bool max_size()</code><br><code>T* data()</code><br><code>T* c_array()</code><br><code>void swap(array&lt;T, N&gt;&amp; y)</code><br><code>void assign(const T&amp; value);</code><br><code>void fill(const T&amp; value);</code></p>
+<p>跟vector的接口大致一样，fill assign都是将value填充数组<br>array 可以使用boost assign里面的list_of来初始化<br><code>boost::array&lt;int, 10&gt; arr;</code><br><code>arr = list_of(1)(2)(3)(4)(5)(6)(7)(8)(9)(10);</code><br>但不能用push_back insert 等其他方法来更新值．</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/15/boost_array/" data-id="cio8j33c70005cmxl9nzna141" class="article-share-link">Partager</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-boost_0515" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -101,7 +135,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="cio71gz6q00006lxlz9dcf8m0" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="cio8j33ca0006cmxlow3femri" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -137,7 +171,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/04/python-file-reading-writing/" data-id="cio714es7000guxxltgwr79nj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/04/python-file-reading-writing/" data-id="cio8j33d3000lcmxlpnb71qbz" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -193,7 +227,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="cio714ers0008uxxlcr151zgh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="cio8j33ck0008cmxlj3tb0o3w" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
@@ -231,7 +265,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/03/source-posts-data-transformer-md/" data-id="cio714es9000juxxlpewqgbpq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/03/source-posts-data-transformer-md/" data-id="cio8j33d4000mcmxld0k2c38l" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -241,9 +275,9 @@
 
 
   
-    <article id="post-blog" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-caffe_blob" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/blog/" class="article-date">
+    <a href="/2016/04/30/caffe_blob/" class="article-date">
   <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
 </a>
     
@@ -253,24 +287,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>首先参考了 <a href="http://www.jianshu.com/p/858ecf233db9" target="_blank" rel="external">http://www.jianshu.com/p/858ecf233db9</a> 搭建了hexo<br>nodejs 的安装 是下载了源码， 然后参考 <a href="http://blog.csdn.net/awj3584/article/details/18401539" target="_blank" rel="external">http://blog.csdn.net/awj3584/article/details/18401539</a> 编译的<br>然后就是配置_config.yml里面， 原帖子中的有误？ 使用了如下配置成功<br>deploy:<br>type: git #部署类型, 本文使用Github<br>repo: <repo>  #部署的仓库的SSH<br>branch: master   #部署分支,一般使用master主分支<br>常用的hexo 命令<br>hexo init<br>hexo generate<br>hexo server 通过localhost查看<br>hexi deploy 挂载到github<br>都可以用类似于 hexo d这样简写的方式</repo></p>
-<p>首先简易说下caffe.cpp的使用方法</p>
-<p>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0<br>这是最简单的训练方法，其中-gpu 0 设定了device number, 如果不使用这个参数的话，程序会检查lenet_solver中是否指定mode 为 GPU，已经device num<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -snapshot examples/test/lenet_solver_iter_75.solverstate<br>这是接着上次的训练，比如因为其他内在外在的原因，其中snapshot的参数为保存的以前的训练状态，例如上式中iter_75就是训练到75的时候<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -weights examples/test/lenet_solver_iter_75.caffemodel<br>这是finetune的过程，其中.caffemodel是之前训练保存的参数。finetune真是好用，简单不到10次重复finetune就达到了我之前使用几万次迭代才能得到的结果</p>
-<p>./build/tools/caffe device_query -gpu 0<br>查询制定的gpu的参数。</p>
-<p>./build/tools/caffe test -model examples/test/lenet_train_test.prototxt -weights examples/test/lenet_solver_iter_75.caffemodel -gpu 0 -iterations 100<br>这是测试模型-model参数指的是神经网络模型的net参数 -weights 为训练出来的网络参数 -iterations为测试的迭代次数 默认为50</p>
-<p>./build/tools/caffe time -model examples/test/lenet_train_test.prototxt -iterations 20<br>分析网络模型前向和后向传播的时间</p>
-<p>简易分析源码<br>现在的tools里面有四个参数，由1也可以看到，包括train test decive_query test,当然可以自行添加，只需仿照上述四个参数的代码自行添加所需即可。<br>首先，定义函数指针，返回值为int，无参数输入。可以看到上述train test devie_query test 均为这样的函数。<br>typedef int (*BrewFunction)();<br>然后定义一个map，typedef map<caffe::string, brefunction=""> BrewMap; BrewMap g_brew_map,<br>之后就是</caffe::string,></p>
-<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23</p>
-<p>#define RegisterBrewFunction(func) \<br>   namespace { \<br>    class <strong>Registerer_##func { \<br>        public: /<em> NOLINT </em>/ \
-         </strong>Registerer_##func() { \<br>         g_brew<em>map[#func] = &func; \<br>         } \<br>    }; \<br>    __Registerer</em>##func g<em>registerer</em>##func; \<br>   }</p>
-<p>static BrewFunction GetBrewFunction(const caffe::string&amp; name) {<br>  if (g_brew_map.count(name)) {<br>    return g_brew_map[name];<br>  } else {<br>    LOG(ERROR) &lt;&lt; “Available caffe actions:”;<br>    for (BrewMap::iterator it = g_brew_map.begin();<br>         it != g_brew<em>map.end(); ++it) {<br>      LOG(ERROR) &lt;&lt; “\t” &lt;&lt; it-&gt;first;<br>    }<br>    LOG(FATAL) &lt;&lt; “Unknown action: “ &lt;&lt; name;<br>    return NULL;  // not reachable, just to suppress old compiler warnings.<br>  }<br>其中##表示的是拼接两个字符串，#表示的是将其转换为字符串。如RegisterBrewFunction(time)的话 Registerer</em>##func会在编译前替换成Registerer_time，而<br>g_brew_map[#func] = &func;则会替换成g_brew_map[“time”] = &time; #@fun 会被替换为’fun’（这里没用到，嘻嘻）<br>在train中</p>
-<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>if (FLAGS_gpu &lt; 0<br>    &amp;&amp; solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {<br>  FLAGS_gpu = solver_param.device_id();<br>}</p>
-<p>// Set device id and mode<br>if (FLAGS_gpu &gt;= 0) {<br>  LOG(INFO) &lt;&lt; “Use GPU with device ID “ &lt;&lt; FLAGS_gpu;<br>  Caffe::SetDevice(FLAGS_gpu);<br>  Caffe::set_mode(Caffe::GPU);<br>} else {<br>  LOG(INFO) &lt;&lt; “Use CPU.”;<br>  Caffe::set_mode(Caffe::CPU);<br>}<br>可以得知，如果在cmd端不指定-gpu的话，程序会去查询solver中是否制定了gpu mode以及device number。<br>其他部分代码差不多很显然易见了。有空再仔细分析吧。</p>
-
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/blog/" data-id="cio714ero0004uxxle0gz9sdp" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/caffe_blob/" data-id="cio8j33bu0000cmxln56c4bo0" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -280,9 +301,9 @@
 
 
   
-    <article id="post-cplusplus.string" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-blas" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/cplusplus.string/" class="article-date">
+    <a href="/2016/04/30/blas/" class="article-date">
   <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
 </a>
     
@@ -292,52 +313,27 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>今天友人来访，应邀写一个段程序处理数据，其中设计到字符串的操作（split find）<br>然后发觉自己对这一块儿蛮生疏，查阅cplusplus,总结如下。</p>
-<p>string是std的一个类.typedef basic_string<char> string;</char></p>
+        <p> 近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码<br>因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。</p>
+<p>blas以及他的各种衍生包的安装舍去不表。</p>
+<p>blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。<br>因此按照维度的增加，blas将运算分为三个level</p>
+<blockquote>
+<p>向量与向量的运算<br>矩阵和向量的运算<br>矩阵和矩阵的运算</p>
+</blockquote>
+<p>（由于太多，现在只了解用到部分，其余部分随用随添加）</p>
 <ol>
-<li><p>构造函数，copy构造函数，assign</p>
-<blockquote>
-<p>string() ; //empty string<br>string(const string&amp; str); //copy<br>　　&gt; string(const string&amp; str, size_t pos, size_t len = npos);<br>string(const char<em> s)<br>string(const char</em> s, size_t n)<br>string(size_t n, char c);<br>template<class inputiterator=""> string(InputIterator first, InputIterator last) //[first, last)</class></p>
-<p>string&amp; operator=(const string&amp; str);<br>string&amp; operator=(const char* s);<br>string&amp; operator=(char c)</p>
-<p>string&amp; assign(const string&amp; str);<br>string&amp; assign(const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; assign(const char<em> s)<br>string&amp; assign(const char</em> s, size_t n)<br>string&amp; assign(size_t n, char c)<br>template<class inputiterator=""> string assign&amp;(InputIterator first, InputIterator last);</class></p>
-</blockquote>
-</li>
-<li><p>size相关的<br>　　&gt; size_t size() const;</p>
-<blockquote>
-<p>size_t length() const;<br>size_t capacity() const;<br>size_t max_size() const;</p>
-<p>void reserve(size_t size = 0);</p>
-<p>bool empty();</p>
-<p>void clear();</p>
-</blockquote>
-<p>size() 和　length()都返回的是字符串的大小，但更推荐用前者。capacity() 返回的是为当前字符串申请的空间的大小，这个<br>大小是以byte来记，并且这个大小不小于字符串的长度。max_size()返回的是字符串能申请到的最大长度。因为字符串可以动态改变大小<br>所以，为了更加有效率，当可以预先知道字符串的大致长度范围的时候，最好使用reserve函数申请合适的空间长度，防止字符的不停<br>拷贝。<br>empty() 返回的是字符串是否为空，当然你可以使用size() &lt;= 0来判断，但是还是推荐使用这个函数。</p>
-</li>
-<li><p>element access</p>
-<blockquote>
-<p>char&amp; operator<a href="size_t pos"></a>;<br>const char&amp; operator<a href="size_t pos"></a>;<br>char&amp; at(size_t pos);<br>const char&amp; at(size_t pos) const;</p>
-</blockquote>
-<p>operator[] pos 小于length,不报异常。pos等于length时候，const 版本不报异常。其他情况均报异常。<br>　　 at 只要不在length范围内，就报异常。</p>
-</li>
-<li><p>modifers</p>
-<blockquote>
-<p>string&amp; operator+=(const string&amp; str);<br>string&amp; operator+=(const char&amp; c);<br>string&amp; operator+=(const char* s)</p>
-<p>string&amp; append(const string&amp; str);<br>string&amp; append(const string&amp; str, size_t npos, size_t sublen);<br>string&amp; append(const char<em> s);<br>　 &gt; string&amp; append(const char</em> s, size_t n);<br>string&amp; append(size_t n, char c);<br>template<typename inputiterator=""> string&amp; append(InputIterator first, InputIterator last);</typename></p>
-<p>string&amp; replace (size_t pos,  size_t len,  const string&amp; str);<br>string&amp; replace (iterator i1, iterator i2, const string&amp; str);<br>string&amp; replace (size_t pos,  size_t len,  const string&amp; str, size_t subpos, size_t sublen);<br>　 &gt; string&amp; replace (size_t pos,  size_t len,  const char<em> s);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s);<br>string&amp; replace (size_t pos,  size_t len,  const char<em> s, size_t n);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s, size_t n);<br>string&amp; replace (size_t pos,  size_t len,  size_t n, char c);<br>string&amp; replace (iterator i1, iterator i2, size_t n, char c);<br>template <class inputiterator=""> string&amp; replace (iterator i1, iterator i2, InputIterator first, InputIterator last);</class></p>
-<p>string&amp; erase (size_t pos = 0, size_t len = npos);<br>iterator erase (iterator p);<br>iterator erase (iterator first, iterator last);</p>
-<p>void swap (string&amp; str);</p>
-<p>string&amp; insert (size_t pos, const string&amp; str);<br>string&amp; insert (size_t pos, const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; insert (size_t pos, const char<em> s);<br>string&amp; insert (size_t pos, const char</em> s, size_t n);<br>string&amp; insert (size_t pos, size_t n, char c);<br>void insert (iterator p, size_t n, char c);<br>iterator insert (iterator p, char c);<br>template <class inputiterator=""> void insert (iterator p, InputIterator first, InputIterator last);</class></p>
-</blockquote>
-</li>
-<li><p>find相关的<br>　 &gt; size_t find (const string&amp; str, size_t pos = 0) const;</p>
-<blockquote>
-<p>size_t find (const char<em> s, size_t pos = 0) const;<br>size_t find (const char</em> s, size_t pos, size_t n) const;<br>size_t find (char c, size_t pos = 0) const;</p>
-</blockquote>
+<li>level1 向量向量运算<br>cblas_?asum  ？可取s, d, sc, dz 作用是Sum of vector magnitudes  （参数）</li>
+<li>level2 矩阵向量运算</li>
+<li><p>level3 矩阵矩阵运算<br>cblas<em>?gemm  ？ 可取s, d, c, z 用作一般矩阵的乘法<br>void cblas</em>？gemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, </p>
+<pre><code>const MKL_INT m, const MKL_INT n, const MKL_INT k, const float alpha, const float *a, 
+const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c, const MKL_INT ldc);
+</code></pre><p>C := alpha<em>op(A)</em>op(B) + beta*C,<br>alpha beta都是scalar A,B,C是矩阵 A（m×k） B（kxn） C（mxn）<br>如果transa=CblasNoTrans, op(A) = A， transa=CblasTrans, then op(A) = AT，transa=CblasConjTrans, then op(A) = AH.<br>m 指定的是op（A）以及C的行， n指定的是op(B)和C的列， k是op（A）的列和op（B）<br>lda 之类指定的是相应向量的leading demension 比如rowmajor下，transa=CblasNoTrans，lda&gt;=max(1, k)</p>
 </li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="cio714erp0005uxxlecgv04e6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/blas/" data-id="cio8j33c40002cmxlu4dx94hi" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -388,7 +384,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/boost_function/" data-id="cio714erq0006uxxl6o93duq3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/boost_function/" data-id="cio8j33cj0007cmxlgcojri1j" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -398,9 +394,9 @@
 
 
   
-    <article id="post-caffe_syncedMem" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-advancedGoogleTest" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/caffe_syncedMem/" class="article-date">
+    <a href="/2016/04/30/advancedGoogleTest/" class="article-date">
   <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
 </a>
     
@@ -410,57 +406,16 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>今天来说说caffe中的底层类SyncedMemory</p>
-<p>首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。</p>
+        <p>此为gtest的第二篇，来说一些高级技巧</p>
+<p>基本翻译自这里<a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md" target="_blank" rel="external">https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md</a></p>
 <ol>
-<li><p>SyncedMemory的成员变量</p>
-<p><code>void* cpu_ptr_;
-void* gpu_ptr_;
-size_t size_;
-SyncedHead head_; //enum SyncedHead { UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED };
-bool own_cpu_data_;
-bool cpu_malloc_use_cuda_;
-bool own_gpu_data_;
-int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变量的具体含义，尤其需要注意的是own_[c,g]pu<em>data</em>,这两个变量标示的是<br>如果相对应的[c,g]pu<em>ptr</em>指向的数据是通过malloc等方式申请的话，其值为true，通过set_方法赋值时（与别的变量共享），其值为false<br>从而在变量销毁的时候不会将共享数据的数据释放掉。<br>cpu_malloc_use<em>cuda</em> 变量标示的是在申请cpu内存的时候是否使用的是cuda的相应方法，使用cuda的方法能够申请得到pinned memory,是的<br>在多卡进行训练时候，提高数据copy的效率使得large models on multi-gpu 更加稳定。</p>
-</li>
-<li><p>SyncedMemory的成员函数<br>private 成员函数,<br><code>void to_cpu();
- void to_gpu();</code><br>这俩函数是类内部函数，实现的是cpu和gpu数据的同步。值的注意的地方是在 在数据传输过程中，数据head_的更新。</p>
-<p>接口函数<br>`<br>const void<em> cpu_data();<br>void</em> mutable_cpu_data();<br>void set_cpu_data(void* data);</p>
-<p>const void<em> gpu_data();<br>void</em> mutable_gpu_data();<br>void set_gpu_data(void* data);</p>
-<p>size_t size();<br>SyncedHead head();<br>void async_gpu_push(const cudaStream_t&amp; stream);<br>`<br>很简易的接口，从名字就可以知道他们的作用。</p>
-</li>
+<li>more Assertions</li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/caffe_syncedMem/" data-id="cio714err0007uxxl77y28a9i" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-caffe_blob" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/caffe_blob/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/caffe_blob/" data-id="cio714er20000uxxl7y9pm0tk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/advancedGoogleTest/" data-id="cio8j33c60003cmxlwmpfiava" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -486,7 +441,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="cio714er60001uxxlqgjhycmr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="cio8j33c30001cmxlm4l7z96j" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -507,7 +462,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li></ul>
     </div>
@@ -517,7 +472,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
     </div>
@@ -527,7 +482,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
       <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a>
     </div>
@@ -546,9 +501,13 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/05/15/boost_array/">(no title)</a>
+          </li>
         
           <li>
             <a href="/2016/05/14/boost_0515/">boost_0515</a>
@@ -566,10 +525,6 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
             <a href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
           </li>
         
-          <li>
-            <a href="/2016/04/30/blog/">(no title)</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -583,7 +538,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2016 sharpL<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
