@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   
-  <title>iomanip | sharp&#39;s blog</title>
+  <title>blas | sharp&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="今天来简单说一下iomanip的处理
-#setw　和 setfill
-两者经常配合使用，setw用来指定输出到流的时候采用的是多少字符位置，默认右对齐,setfill来指定流中其他位置用什么字符填充，默认字符是空格．    12std::cout &amp;lt;&amp;lt; std::setw(5) &amp;lt;&amp;lt; setfill(&amp;apos;#&amp;apos;) &amp;lt;&amp;lt; 3 &amp;lt;&amp;lt; en">
+  <meta name="description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
+blas以及他的各种衍生包的安装舍去不表。
+blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iomanip">
-<meta property="og:url" content="http://yoursite.com/2016/05/18/iomanip/index.html">
+<meta property="og:title" content="blas">
+<meta property="og:url" content="http://yoursite.com/2016/05/18/blas-1/index.html">
 <meta property="og:site_name" content="sharp's blog">
-<meta property="og:description" content="今天来简单说一下iomanip的处理
-#setw　和 setfill
-两者经常配合使用，setw用来指定输出到流的时候采用的是多少字符位置，默认右对齐,setfill来指定流中其他位置用什么字符填充，默认字符是空格．    12std::cout &amp;lt;&amp;lt; std::setw(5) &amp;lt;&amp;lt; setfill(&amp;apos;#&amp;apos;) &amp;lt;&amp;lt; 3 &amp;lt;&amp;lt; en">
-<meta property="og:updated_time" content="2016-05-18T13:58:52.520Z">
+<meta property="og:description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
+blas以及他的各种衍生包的安装舍去不表。
+blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
+<meta property="og:updated_time" content="2016-05-18T15:14:48.084Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iomanip">
-<meta name="twitter:description" content="今天来简单说一下iomanip的处理
-#setw　和 setfill
-两者经常配合使用，setw用来指定输出到流的时候采用的是多少字符位置，默认右对齐,setfill来指定流中其他位置用什么字符填充，默认字符是空格．    12std::cout &amp;lt;&amp;lt; std::setw(5) &amp;lt;&amp;lt; setfill(&amp;apos;#&amp;apos;) &amp;lt;&amp;lt; 3 &amp;lt;&amp;lt; en">
+<meta name="twitter:title" content="blas">
+<meta name="twitter:description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
+blas以及他的各种衍生包的安装舍去不表。
+blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
   
     <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
   
@@ -73,10 +73,10 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-iomanip" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-blas-1" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/05/18/iomanip/" class="article-date">
-  <time datetime="2016-05-18T13:55:23.000Z" itemprop="datePublished">2016-05-18</time>
+    <a href="/2016/05/18/blas-1/" class="article-date">
+  <time datetime="2016-05-18T15:13:03.000Z" itemprop="datePublished">2016-05-18</time>
 </a>
     
   </div>
@@ -87,7 +87,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      iomanip
+      blas
     </h1>
   
 
@@ -95,20 +95,31 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>今天来简单说一下iomanip的处理</p>
-<p>#setw　和 setfill</p>
-<p>两者经常配合使用，setw用来指定输出到流的时候采用的是多少字符位置，默认右对齐,setfill来指定<br>流中其他位置用什么字符填充，默认字符是空格．<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">std::cout &lt;&lt; std::setw(5) &lt;&lt; setfill(&apos;#&apos;) &lt;&lt; 3 &lt;&lt; endl;</span><br><span class="line">//output ####3</span><br></pre></td></tr></table></figure></p>
-<p>ps 1)注意setfill()里面是单引号，当setw指定的宽度小于后面要输出到流的字符总长时候，设定的宽度会被忽略<br>ps 2)这里的流不仅仅只的是　cout ostringstream 等也是可以的．</p>
-<p>#setprecision　fixed scientific</p>
-<p>设定输出到流的浮点数的保存方式<br>std::setprescision(5) //小数点后至多保存５位数字?<br>std::fixed // 保存固定的位数<br>std::scientific //以科学计数法来保存浮点数<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const double PI = 3.14159;</span><br><span class="line">std::cout &lt;&lt; std::setprecision(4) &lt;&lt; PI &lt;&lt; std::endl;</span><br><span class="line">// 1) 3.1416</span><br><span class="line">std::cout &lt;&lt; std::setprecision(7) &lt;&lt; PI &lt;&lt; std::endl;</span><br><span class="line">// 2) 3.14</span><br><span class="line">std::cout &lt;&lt; std::setprecision(9) &lt;&lt; PI &lt;&lt; std::endl;</span><br><span class="line">// 3) 3.14159</span><br><span class="line">std::cout &lt;&lt; std::fixed &lt;&lt; std::endl;</span><br><span class="line">std::cout &lt;&lt; std::setprecision(9) &lt;&lt; PI &lt;&lt; std::endl;</span><br><span class="line">// 4) 3.141590000</span><br></pre></td></tr></table></figure></p>
+        <p> 近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码<br>因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。</p>
+<p>blas以及他的各种衍生包的安装舍去不表。</p>
+<p>blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。<br>因此按照维度的增加，blas将运算分为三个level</p>
+<ul>
+<li>向量与向量的运算</li>
+<li>矩阵和向量的运算</li>
+<li>矩阵和矩阵的运算</li>
+</ul>
+<p>（由于太多，现在只了解用到部分，其余部分随用随添加）</p>
+<ol>
+<li>level1 向量向量运算<br> cblas_?asum  ？可取s, d, sc, dz 作用是Sum of vector magnitudes  （参数）</li>
+<li>level2 矩阵向量运算</li>
+<li><p>level3 矩阵矩阵运算<br> cblas_?gemm  ？ 可取s, d, c, z 用作一般矩阵的乘法</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">void cblas_？gemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, </span><br><span class="line">            const MKL_INT m, const MKL_INT n, const MKL_INT k, const float alpha, const float *a, </span><br><span class="line">            const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c, const MKL_INT ldc);</span><br><span class="line">C := alpha*op(A)*op(B) + beta*C,</span><br></pre></td></tr></table></figure>
+<p> alpha beta都是scalar A,B,C是矩阵 A（m×k） B（kxn） C（mxn）<br> 如果transa=CblasNoTrans, op(A) = A， transa=CblasTrans, then op(A) = AT，transa=CblasConjTrans, then op(A) = AH.<br> m 指定的是op（A）以及C的行， n指定的是op(B)和C的列， k是op（A）的列和op（B）<br> lda 之类指定的是相应向量的leading demension 比如rowmajor下，transa=CblasNoTrans，lda&gt;=max(1, k)</p>
+</li>
+</ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/iomanip/" data-id="ciod0r5ux000odhxljtqrpiju" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/blas-1/" data-id="ciod0r5uc0002dhxltjkgawy9" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li></ul>
 
     </footer>
   </div>
@@ -116,19 +127,19 @@
     
 <nav id="article-nav">
   
-    <a href="/2016/05/18/protobuf/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2016/05/18/blog-1/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          protobuf
+          blog
         
       </div>
     </a>
   
   
-    <a href="/2016/05/18/caffe-syncedMem/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2016/05/18/boost-function/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">caffe_syncedMem</div>
+      <div class="article-nav-title">boost_function</div>
     </a>
   
 </nav>
