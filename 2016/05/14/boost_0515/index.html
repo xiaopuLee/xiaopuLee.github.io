@@ -13,7 +13,7 @@ noncopyable  在编写一些类的时候，我们通常需要这样的功能－�
 <meta property="og:site_name" content="sharp's blog">
 <meta property="og:description" content="今天来说说boost的一些小工具，有一些类，也有一些宏，来自＜boost程序库完全开发指南&amp;gt;
 noncopyable  在编写一些类的时候，我们通常需要这样的功能－－如禁止类实例的复制和赋值，一般的实现方式就是将copy构造函数或者operator=的属性设置为private 即可．如caffe中就是将使用DISABLE_COPY_AND_ASSIGN(＼),而宏DISABLE_COPY_A">
-<meta property="og:updated_time" content="2016-05-14T11:25:25.959Z">
+<meta property="og:updated_time" content="2016-05-18T15:44:20.017Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="boost_0515">
 <meta name="twitter:description" content="今天来说说boost的一些小工具，有一些类，也有一些宏，来自＜boost程序库完全开发指南&amp;gt;
@@ -76,6 +76,10 @@ noncopyable  在编写一些类的时候，我们通常需要这样的功能－�
   <time datetime="2016-05-14T06:28:28.000Z" itemprop="datePublished">2016-05-14</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/boost/">boost</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -103,20 +107,22 @@ noncopyable  在编写一些类的时候，我们通常需要这样的功能－�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="ciod119pv0006iqxlp5igi7uc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="ciod1dvog0004pnxlajhqltim" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/boost-noncopyable-typof-assign/">boost,noncopyable,typof,assign</a></li></ul>
+
     </footer>
   </div>
   
     
 <nav id="article-nav">
   
-    <a href="/2016/05/15/boost_array/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2016/05/18/caffe-syncedMem/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          (no title)
+          caffe_syncedMem
         
       </div>
     </a>
@@ -135,7 +141,7 @@ noncopyable  在编写一些类的时候，我们通常需要这样的功能－�
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/boost/">boost</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/google/">google</a></li></ul>
     </div>
   </div>
 
@@ -145,7 +151,7 @@ noncopyable  在编写一些类的时候，我们通常需要这样的功能－�
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-noncopyable-typof-assign/">boost,noncopyable,typof,assign</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
     </div>
   </div>
 
@@ -155,7 +161,7 @@ noncopyable  在编写一些类的时候，我们通常需要这样的功能－�
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
+      <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/boost-noncopyable-typof-assign/" style="font-size: 10px;">boost,noncopyable,typof,assign</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
     </div>
   </div>
 
@@ -177,6 +183,10 @@ noncopyable  在编写一些类的时候，我们通常需要这样的功能－�
       <ul>
         
           <li>
+            <a href="/2016/05/18/boost_array/">(no title)</a>
+          </li>
+        
+          <li>
             <a href="/2016/05/18/gflag/">gflag</a>
           </li>
         
@@ -190,10 +200,6 @@ noncopyable  在编写一些类的时候，我们通常需要这样的功能－�
         
           <li>
             <a href="/2016/05/18/blas-1/">blas</a>
-          </li>
-        
-          <li>
-            <a href="/2016/05/18/boost-function/">boost_function</a>
           </li>
         
       </ul>
