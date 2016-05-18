@@ -101,217 +101,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="ciod0r5uk0006dhxlwnddvb7d" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-data_transformer" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/03/data_transformer/" class="article-date">
-  <time datetime="2016-05-04T02:27:30.000Z" itemprop="datePublished">2016-05-03</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/caffe/">caffe</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#caffe 源码阅读之data_transformer</p>
-<p>今天来说说data_transformer,data_transformer是caffe的基础类.<br>正如其名,它要做的事情就是对输入数据进行转换,例如对输入图片的进行crop mirror,减中值啊之类.<br>也可以根据需要开发新的转换方向.</p>
-<p>1 主要成员变量和方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">   public:</span><br><span class="line">explicit DataTransformer(const Transformation&amp; param, Phase phase)</span><br><span class="line">void InitRand();</span><br><span class="line"></span><br><span class="line">vector&lt;int&gt; InferBlobShape(const vector&lt;Mat&gt;&amp; mat_vector);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const Mat&amp; mat);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const vector&lt;Datum&gt;&amp; datum_vector);</span><br><span class="line">vector&lt;int&gt; InferBlobShape(const Datum&amp; datum);</span><br><span class="line"></span><br><span class="line">void Transform(const Datum&amp; datum, Blob&lt;Dtype&gt;* transformed_blbo);</span><br><span class="line">void Transform(const vector&lt;Datum&gt;&amp; datum_vector, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line">void Transform(const Mat&amp; img, Blob&lt;Dtype&gt;* tranformed_blbo);</span><br><span class="line">void Transform(const vecotr&lt;Mat&gt;&amp; mat_vector, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line"></span><br><span class="line">void Transform(Blob&lt;Dtype&gt;* input_blob, Blob&lt;Dtype&gt;* transformed_blob);</span><br><span class="line">   protected:</span><br><span class="line">void Transform(const Datum&amp; datum, Dtype* transformed_data);	</span><br><span class="line"></span><br><span class="line">TransformationParameter param_;</span><br><span class="line">shared_ptr&lt;Caffe::RNG&gt; rng_;</span><br><span class="line">Blob&lt;Dtype&gt; data_mean_;</span><br><span class="line">vector&lt;Dtype&gt; mean_values_;</span><br></pre></td></tr></table></figure>
-<p>首先是构造函数,需要指定Transformation 和 Phase,后者是定义训练类别,比如train test<br>前者是caffe.proto里面定义的数据结构,定义了scale mean_file mean_value crop等</p>
-<p>InferBlobShape 这一系列方法是通过传入的数据以及TransformationParameter来推测输出数据的BlobShape<br>暂且不表.</p>
-<p>Transform 这一系列方法是将不同的数据格式转换成Blob形式.<br>拿最简单的Datum -&gt; Dtype* 来说,其他的都大同小异.</p>
-<p>首先 mean_value 在caffe.proto中属于repeated类型,可以指定一个或者跟channels数严格相等个,并且不能和<br>mean_file同时指定.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const bool do_mirror = param_.mirror() &amp;&amp; Rand(2) //</span><br></pre></td></tr></table></figure>
-<p>这组数据是否做镜像,依据的是TransformationParameter 的mirror参数设为true,并且同时随机数随机成1</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if(has_mean_values)</span><br><span class="line">&#123;</span><br><span class="line">	CHECK(mean_values.size() == 1 || mean_values_.size() == datum_channels);</span><br><span class="line">	if(datum_channels &gt;　1 &amp;&amp; mean_values_.size() == 1)</span><br><span class="line">	&#123;</span><br><span class="line">		for(int c=1; c!=datum_channels; ++c)</span><br><span class="line">			mean_values_.push_back(mean_values[0]);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先如果设定了mean_values的话，要么设置一个value值，然后复制datum_channels份，所有的通道共同使用这个，要么设定datum_channels个．</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">if(crop_size)</span><br><span class="line">&#123;</span><br><span class="line">	height = crop_size;</span><br><span class="line">	width = crop_size;</span><br><span class="line">	if(phase_ = TRAIN)</span><br><span class="line">	&#123;</span><br><span class="line">		h_off = Rand(datum_height - crop_size + 1);</span><br><span class="line">		w_off = Rand(datum_width - crop_size + 1);</span><br><span class="line">	&#125;</span><br><span class="line">	else</span><br><span class="line">	&#123;</span><br><span class="line">		h_off = (datum_height - crop_size) / 2;</span><br><span class="line">		w_off = (datum_height - crop_size) / 2;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中h_off, w_off分别是进行crop时候，crop后图像数据的原点(也就是左上角)在原图像中的h坐标和w坐标．</p>
-<p>值得注意的是，通过mirror和crop，caffe可以轻易地增加大量training data.</p>
-<p>之后就是进行crop后的数据和原图像数据进行减中值和scale处理．</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="ciod0r5us000fdhxl17vabp1f" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-cplusplus.string" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/cplusplus.string/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天友人来访，应邀写一个段程序处理数据，其中设计到字符串的操作（split find）<br>然后发觉自己对这一块儿蛮生疏，查阅cplusplus,总结如下。</p>
-<p>string是std的一个类.typedef basic_string<char> string;</char></p>
-<ol>
-<li><p>构造函数，copy构造函数，assign</p>
-<blockquote>
-<p>string() ; //empty string<br>string(const string&amp; str); //copy<br>　　&gt; string(const string&amp; str, size_t pos, size_t len = npos);<br>string(const char<em> s)<br>string(const char</em> s, size_t n)<br>string(size_t n, char c);<br>template<class inputiterator=""> string(InputIterator first, InputIterator last) //[first, last)</class></p>
-<p>string&amp; operator=(const string&amp; str);<br>string&amp; operator=(const char* s);<br>string&amp; operator=(char c)</p>
-<p>string&amp; assign(const string&amp; str);<br>string&amp; assign(const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; assign(const char<em> s)<br>string&amp; assign(const char</em> s, size_t n)<br>string&amp; assign(size_t n, char c)<br>template<class inputiterator=""> string assign&amp;(InputIterator first, InputIterator last);</class></p>
-</blockquote>
-</li>
-<li><p>size相关的<br>　　&gt; size_t size() const;</p>
-<blockquote>
-<p>size_t length() const;<br>size_t capacity() const;<br>size_t max_size() const;</p>
-<p>void reserve(size_t size = 0);</p>
-<p>bool empty();</p>
-<p>void clear();</p>
-</blockquote>
-<p>size() 和　length()都返回的是字符串的大小，但更推荐用前者。capacity() 返回的是为当前字符串申请的空间的大小，这个<br>大小是以byte来记，并且这个大小不小于字符串的长度。max_size()返回的是字符串能申请到的最大长度。因为字符串可以动态改变大小<br>所以，为了更加有效率，当可以预先知道字符串的大致长度范围的时候，最好使用reserve函数申请合适的空间长度，防止字符的不停<br>拷贝。<br>empty() 返回的是字符串是否为空，当然你可以使用size() &lt;= 0来判断，但是还是推荐使用这个函数。</p>
-</li>
-<li><p>element access</p>
-<blockquote>
-<p>char&amp; operator<a href="size_t pos"></a>;<br>const char&amp; operator<a href="size_t pos"></a>;<br>char&amp; at(size_t pos);<br>const char&amp; at(size_t pos) const;</p>
-</blockquote>
-<p>operator[] pos 小于length,不报异常。pos等于length时候，const 版本不报异常。其他情况均报异常。<br>　　 at 只要不在length范围内，就报异常。</p>
-</li>
-<li><p>modifers</p>
-<blockquote>
-<p>string&amp; operator+=(const string&amp; str);<br>string&amp; operator+=(const char&amp; c);<br>string&amp; operator+=(const char* s)</p>
-<p>string&amp; append(const string&amp; str);<br>string&amp; append(const string&amp; str, size_t npos, size_t sublen);<br>string&amp; append(const char<em> s);<br>　 &gt; string&amp; append(const char</em> s, size_t n);<br>string&amp; append(size_t n, char c);<br>template<typename inputiterator=""> string&amp; append(InputIterator first, InputIterator last);</typename></p>
-<p>string&amp; replace (size_t pos,  size_t len,  const string&amp; str);<br>string&amp; replace (iterator i1, iterator i2, const string&amp; str);<br>string&amp; replace (size_t pos,  size_t len,  const string&amp; str, size_t subpos, size_t sublen);<br>　 &gt; string&amp; replace (size_t pos,  size_t len,  const char<em> s);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s);<br>string&amp; replace (size_t pos,  size_t len,  const char<em> s, size_t n);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s, size_t n);<br>string&amp; replace (size_t pos,  size_t len,  size_t n, char c);<br>string&amp; replace (iterator i1, iterator i2, size_t n, char c);<br>template <class inputiterator=""> string&amp; replace (iterator i1, iterator i2, InputIterator first, InputIterator last);</class></p>
-<p>string&amp; erase (size_t pos = 0, size_t len = npos);<br>iterator erase (iterator p);<br>iterator erase (iterator first, iterator last);</p>
-<p>void swap (string&amp; str);</p>
-<p>string&amp; insert (size_t pos, const string&amp; str);<br>string&amp; insert (size_t pos, const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; insert (size_t pos, const char<em> s);<br>string&amp; insert (size_t pos, const char</em> s, size_t n);<br>string&amp; insert (size_t pos, size_t n, char c);<br>void insert (iterator p, size_t n, char c);<br>iterator insert (iterator p, char c);<br>template <class inputiterator=""> void insert (iterator p, InputIterator first, InputIterator last);</class></p>
-</blockquote>
-</li>
-<li><p>find相关的<br>　 &gt; size_t find (const string&amp; str, size_t pos = 0) const;</p>
-<blockquote>
-<p>size_t find (const char<em> s, size_t pos = 0) const;<br>size_t find (const char</em> s, size_t pos, size_t n) const;<br>size_t find (char c, size_t pos = 0) const;</p>
-</blockquote>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="ciod0r5ur000edhxlaxhvfe9o" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-advancedGoogleTest" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/advancedGoogleTest/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>此为gtest的第二篇，来说一些高级技巧</p>
-<p>基本翻译自这里<a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md" target="_blank" rel="external">https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md</a></p>
-<ol>
-<li>more Assertions</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/advancedGoogleTest/" data-id="ciod0r5ua0001dhxlpniw24o3" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-lablog" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/lablog/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>1 在caffe.cpp中将添加FLAGS_log_dir = <path＞　可以将日志转移在<path>目录</path＞　可以将日志转移在<path></p>
-<p>minist 数据经验<br> 1 training data使用较大的batch 会相应增加训练时间，带来的利好是测试集的准确率会提升<br>   原因很容易理解嘛，增加了batch的大小，本来就等于总训练数据迭代的次数增加了嘛，但是这种单一地增加maxIter并不一定<br>   能够增加测试机的准确率。<br>   <a href="https://www.zhihu.com/question/32673260" target="_blank" rel="external">https://www.zhihu.com/question/32673260</a> 这里的讨论比较好<br>   batch 256  max about 0.9920<br>   batch 512  max 0.9931<br>   batch 1024 max 0.9928 （相对于512时候，明显慢了很多很多，并且收敛的速度也变慢了好多）</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/lablog/" data-id="ciod0r5uw000ldhxli5dakm54" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-plan" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/plan/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="ciod0r5tv0000dhxl69r2is32" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="ciod119pv0006iqxlp5igi7uc" class="article-share-link">Share</a>
       
       
     </footer>
@@ -334,7 +124,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li></ul>
+      <ul class="category-list"></ul>
     </div>
   </div>
 
@@ -344,7 +134,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
     </div>
   </div>
 
@@ -354,7 +144,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
+      <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
     </div>
   </div>
 
@@ -363,7 +153,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li></ul>
     </div>
   </div>
 
