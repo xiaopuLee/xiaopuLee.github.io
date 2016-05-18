@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>protobuf | sharp&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天来简单说下protobuf，也是谷歌的开源项目，用起来非常好用。 并且所定义的数据结构可以在多种语言之间无差别共享只要使用的是同一个proto文件，官方支持的语言包括c++ python java c# go，其他语言也可以找到相应的开源版本。
+它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，比如必须配合相应的proto文件才能看懂里面字段的含义。
+起一个文本文件foo.proto">
+<meta property="og:type" content="article">
+<meta property="og:title" content="protobuf">
+<meta property="og:url" content="http://yoursite.com/2016/05/18/protobuf/index.html">
+<meta property="og:site_name" content="sharp's blog">
+<meta property="og:description" content="今天来简单说下protobuf，也是谷歌的开源项目，用起来非常好用。 并且所定义的数据结构可以在多种语言之间无差别共享只要使用的是同一个proto文件，官方支持的语言包括c++ python java c# go，其他语言也可以找到相应的开源版本。
+它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，比如必须配合相应的proto文件才能看懂里面字段的含义。
+起一个文本文件foo.proto">
+<meta property="og:updated_time" content="2016-05-18T14:17:07.500Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="protobuf">
+<meta name="twitter:description" content="今天来简单说下protobuf，也是谷歌的开源项目，用起来非常好用。 并且所定义的数据结构可以在多种语言之间无差别共享只要使用的是同一个proto文件，官方支持的语言包括c++ python java c# go，其他语言也可以找到相应的开源版本。
+它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，比如必须配合相应的proto文件才能看懂里面字段的含义。
+起一个文本文件foo.proto">
+  
+    <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sharp&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">my life since 2015.12.19</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-protobuf" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/18/protobuf/" class="article-date">
+  <time datetime="2016-05-18T14:00:56.000Z" itemprop="datePublished">2016-05-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      protobuf
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来简单说下protobuf，也是谷歌的开源项目，用起来非常好用。 并且所定义的数据结构可以在多种语言之间无差别共享<br>只要使用的是同一个proto文件，官方支持的语言包括c++ python java c# go，其他语言也可以找到相应的开源版本。</p>
+<p>它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，比如必须配合相应的proto文件才能看懂里面字段的含义。</p>
+<p>起一个文本文件foo.proto，写入下面的内容。定义一个message<br>　　　　<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Message SearchRequest</span><br><span class="line">&#123;</span><br><span class="line">   required string query = 1；</span><br><span class="line">   optional int32 page_number = 2;</span><br><span class="line">   optional int32 result_per_page = 3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>  上述定义了一个message，包括三个字段 query page_number result_per_page,第一个是string类型<br>后两个是int32类型，也可以定义其他类型如enum，甚至嵌套定义message。值得注意的是类型前边的说明<br>required optional以及这里没有出现的repeated， required表明的是这个message在使用的时候必须初始化给定<br>内容的字段， optional表示的是这个字段可以出现0或者1次，repeated表示的是字段内容可以出现多次，会对应到<br>相应的数组，字段是有顺序的。<br>  等号后面的数字是message在编码的时候的顺序，越小相对使用的位数相对少（1-15 只用1byte就可以，16-2047使用<br>2byte），因此在编码的时候应该尽量把1-15留给相对使用频繁的字段。最大的编号是2^29-1,当然一般你用不了这么多。<br>除此之外，19000-19999你也不能用，他们被protobuf留用了。<br>  上述编码会遗留一个问题，就是我要尽量把序号考前的留给常用的字段，如果目前我们还没有这样的字段，可未来指不定就<br>有这样的字段呢？或者我们现在使用的字段在未来不使用了，可以删去了，这样在使用proto的时候，如果编号串了的话就会带<br>来不小的问题。因此protobuf提供了reserve的方法来缓解这种情况。如下面所示。<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message Foo </span><br><span class="line">&#123;</span><br><span class="line">  reserved 2, 15, 9 to 11;</span><br><span class="line">  reserved &quot;foo&quot;, &quot;bar&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>protoc –proto_path=src –cpp_out=build/gen src/foo.proto<br>就可以生产两个文件foo.pb.cc foo.pb.h, 你所定义的类都在里面。</p>
+<p>如果你在文件头写上package foo.bar;你所定义的所有类都会出现在namespace foo::bar里面。</p>
+<p>上述message 会生成SearchRequest类，并且生成<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Foo()；</span><br><span class="line">～Foo()；</span><br><span class="line">Foo(const Foo&amp; other)；</span><br><span class="line">Foo&amp; operator=(const Foo&amp; other)；</span><br><span class="line">void Swap(Foo* other)；</span><br><span class="line">const UnknownFieldSet&amp; unknown_fields() const；</span><br><span class="line">UnknownFieldSet* mutable_unknown_fields()；</span><br></pre></td></tr></table></figure></p>
+<p>当出现嵌套的message时候如message Foo { message Bar { } }， protobuf编译器会生成两个类Foo 和 Foo_Bar，并且<br>在类Foo中typedef Foo_Bar Bar;并且在生成的文件中你可以Foo 和 Foo：：Bar来访问两个类。</p>
+<ol>
+<li>针对optional int32 foo_bar = 5;编译器也会生成static const int kFooBarFieldNumber = 5;</li>
+<li>针对optional 和 required字段，类型为int32 float，例如optional int32 foo = 1; required int32 foo = 1;<br>编译器会生成<br>bool has_foo() const; // 如果这个字段设定了，返回true<br>int32 foo() const;  //返回foo当前的值<br>void set_foo(int32 value)； //设定foo的值<br>void clear_foo()；//清空foo字段，其值返回default值，has_foo返回false。</li>
+<li>针对optional和required字段，类型为string bytes时候 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">optional string foo = 1;</span><br><span class="line">required string foo = 1;</span><br><span class="line">optional bytes foo = 1;</span><br><span class="line">required bytes foo = 1;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>会生成方法<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">bool has_foo() const；</span><br><span class="line">const string&amp; foo() const；</span><br><span class="line">void set_foo(const string&amp; value)；</span><br><span class="line">void set_foo(const char* value)；</span><br><span class="line">void set_foo(const char* value, int size)；</span><br><span class="line">string* mutable_foo()；</span><br><span class="line">void clear_foo()；</span><br><span class="line">void set_allocated_foo(string* value);</span><br><span class="line">string* release_foo();</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><p>而针对repeated字段 如repeated int32 foo = 1；</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int foo_size() const；</span><br><span class="line">int32 foo(int index)；</span><br><span class="line">void set_foo(int index, int32 value)；</span><br><span class="line">void add_foo(int32 value)</span><br><span class="line">void clear_foo()</span><br></pre></td></tr></table></figure>
+<p>当然string对象会比int对象多一些方法可以类比2和3。</p>
+</li>
+<li><p>parse 和　serialize<br>　　　 c++下</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bool SerializeToString(string* output) const</span><br><span class="line">bool ParseFromString(const string&amp; data);</span><br><span class="line">bool SerializeToOstream(ostream* output)</span><br><span class="line">bool ParseFromIstream(istream* input);</span><br></pre></td></tr></table></figure>
+<p>  python下</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SerializeToString()</span><br><span class="line">ParseFromString(data)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<p>生成了pb.h 和pb.cc后就可以在程序中使用了<br>如main.cpp 内容如下<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">   #include&lt;iostream&gt;</span><br><span class="line">   #include&lt;string&gt;</span><br><span class="line">   #include&lt;fstream&gt;</span><br><span class="line">   #include&lt;foo.pb.h&gt;</span><br><span class="line">   //</span><br><span class="line">   int main()</span><br><span class="line">   &#123;</span><br><span class="line">foo::bar::SearchRequest sr;</span><br><span class="line">sr.set_query(&quot;query_1&quot;);</span><br><span class="line">sr.set_page_number(10086);</span><br><span class="line"></span><br><span class="line">std::ofstream file;</span><br><span class="line">file.open(&quot;query.file&quot;);</span><br><span class="line"></span><br><span class="line">if(file.is_open())</span><br><span class="line">&#123;</span><br><span class="line">	sr.SerializeToOstream(file);</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;failed to open the file&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line">return 0;	</span><br><span class="line">　　　　&#125;</span><br></pre></td></tr></table></figure></p>
+<p>g++ main.cpp foo.pb.cc -I <path_to foo.pb.h=""> -lpthread -lprotobuf<br>sq的内容即可serial到query.file中，这个文件是二进制文件。<br>可以在python或者c++或者java下parse这个文件。<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">   from　test_pb2 import *</span><br><span class="line">   sr = SearchRequest()</span><br><span class="line">   with open(&apos;query.file&apos;) as f:</span><br><span class="line">sr.ParseFromString(f.read())</span><br><span class="line">print sr.page_number</span><br><span class="line">print sr.query</span><br></pre></td></tr></table></figure></path_to></p>
+<p>(python 代码插入有问题，真是醉了)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/18/protobuf/" data-id="cioczn9hm000rp9xl11o1uu8v" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/18/caffe-blob/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          caffe_blob
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/18/iomanip/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">iomanip</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/18/boost-function/">boost_function</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/caffe-blob/">caffe_blob</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/protobuf/">protobuf</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/iomanip/">iomanip</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/caffe-syncedMem/">caffe_syncedMem</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 sharpL<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

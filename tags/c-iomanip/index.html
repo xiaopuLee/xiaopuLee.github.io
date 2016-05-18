@@ -3,27 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>sharp&#39;s blog</title>
+  <title>Mot-clé: c++,iomanip | sharp&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="title: boost_arraydate: 2016-05-15 06:16:37
-#boost array
-头文件是　boost/array.hpp
-简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如arrayarray 是模板类，可以使用　boost::array&amp;lt;int, 10&amp;gt; arr;来声明一个元素类型为int，包含10个元素的数组．array没什么特">
-<meta property="og:type" content="article">
+  <meta name="description">
+<meta property="og:type" content="website">
 <meta property="og:title" content="sharp's blog">
-<meta property="og:url" content="http://yoursite.com/2016/05/15/boost_array/index.html">
+<meta property="og:url" content="http://yoursite.com/tags/c-iomanip/index.html">
 <meta property="og:site_name" content="sharp's blog">
-<meta property="og:description" content="title: boost_arraydate: 2016-05-15 06:16:37
-#boost array
-头文件是　boost/array.hpp
-简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如arrayarray 是模板类，可以使用　boost::array&amp;lt;int, 10&amp;gt; arr;来声明一个元素类型为int，包含10个元素的数组．array没什么特">
-<meta property="og:updated_time" content="2016-05-15T11:58:28.266Z">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sharp's blog">
-<meta name="twitter:description" content="title: boost_arraydate: 2016-05-15 06:16:37
-#boost array
-头文件是　boost/array.hpp
-简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如arrayarray 是模板类，可以使用　boost::array&amp;lt;int, 10&amp;gt; arr;来声明一个元素类型为int，包含10个元素的数组．array没什么特">
+<meta name="twitter:description">
   
     <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
   
@@ -76,58 +66,39 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-boost_array" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/15/boost_array/" class="article-date">
-  <time datetime="2016-05-15T11:58:28.270Z" itemprop="datePublished">2016-05-15</time>
+        <section id="main">
+  
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2016" class="archive-year">2016</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2016/05/18/iomanip/" class="archive-article-date">
+  <time datetime="2016-05-18T13:55:23.000Z" itemprop="datePublished">May 18</time>
 </a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
       
-        <hr>
-<p>title: boost_array<br>date: 2016-05-15 06:16:37</p>
-<p>#boost array</p>
-<p>头文件是　boost/array.hpp</p>
-<p>简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如array<br>array 是模板类，可以使用　<br><code>boost::array&lt;int, 10&gt; arr;</code><br>来声明一个元素类型为int，包含10个元素的数组．<br>array没什么特别的地方，就是将c中的数组给封装起来了，提供了迭代器这样的东西，无他．</p>
-<p>一起来看一下array的成员函数</p>
-<p><code>iterator begin();</code><br><code>iterator end()</code><br><code>reference operator[](size_type i);</code><br><code>reference at(size_type i)</code><br><code>reference front()</code><br><code>reference back()</code><br><code>static size_type size()</code><br><code>static bool empty()</code><br><code>static bool max_size()</code><br><code>T* data()</code><br><code>T* c_array()</code><br><code>void swap(array&lt;T, N&gt;&amp; y)</code><br><code>void assign(const T&amp; value);</code><br><code>void fill(const T&amp; value);</code></p>
-<p>跟vector的接口大致一样，fill assign都是将value填充数组<br>array 可以使用boost assign里面的list_of来初始化<br><code>boost::array&lt;int, 10&gt; arr;</code><br><code>arr = list_of(1)(2)(3)(4)(5)(6)(7)(8)(9)(10);</code><br>但不能用push_back insert 等其他方法来更新值．</p>
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/05/18/iomanip/">iomanip</a>
+    </h1>
+  
 
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/15/boost_array/" data-id="cioczn9ha0008p9xlkqlinh8w" class="article-share-link">Partager</a>
-      
-      
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2016/05/18/caffe-syncedMem/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          caffe_syncedMem
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2016/05/14/boost_0515/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">boost_0515</div>
-    </a>
-  
-</nav>
-
-  
 </article>
+  
+  
+    </div></section>
+  
 
 </section>
         

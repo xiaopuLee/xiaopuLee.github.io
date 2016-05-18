@@ -68,9 +68,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-cplusplus.string" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-blog" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/cplusplus.string/" class="article-date">
+    <a href="/2016/04/30/blog/" class="article-date">
   <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
 </a>
     
@@ -80,52 +80,24 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>今天友人来访，应邀写一个段程序处理数据，其中设计到字符串的操作（split find）<br>然后发觉自己对这一块儿蛮生疏，查阅cplusplus,总结如下。</p>
-<p>string是std的一个类.typedef basic_string<char> string;</char></p>
-<ol>
-<li><p>构造函数，copy构造函数，assign</p>
-<blockquote>
-<p>string() ; //empty string<br>string(const string&amp; str); //copy<br>　　&gt; string(const string&amp; str, size_t pos, size_t len = npos);<br>string(const char<em> s)<br>string(const char</em> s, size_t n)<br>string(size_t n, char c);<br>template<class inputiterator=""> string(InputIterator first, InputIterator last) //[first, last)</class></p>
-<p>string&amp; operator=(const string&amp; str);<br>string&amp; operator=(const char* s);<br>string&amp; operator=(char c)</p>
-<p>string&amp; assign(const string&amp; str);<br>string&amp; assign(const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; assign(const char<em> s)<br>string&amp; assign(const char</em> s, size_t n)<br>string&amp; assign(size_t n, char c)<br>template<class inputiterator=""> string assign&amp;(InputIterator first, InputIterator last);</class></p>
-</blockquote>
-</li>
-<li><p>size相关的<br>　　&gt; size_t size() const;</p>
-<blockquote>
-<p>size_t length() const;<br>size_t capacity() const;<br>size_t max_size() const;</p>
-<p>void reserve(size_t size = 0);</p>
-<p>bool empty();</p>
-<p>void clear();</p>
-</blockquote>
-<p>size() 和　length()都返回的是字符串的大小，但更推荐用前者。capacity() 返回的是为当前字符串申请的空间的大小，这个<br>大小是以byte来记，并且这个大小不小于字符串的长度。max_size()返回的是字符串能申请到的最大长度。因为字符串可以动态改变大小<br>所以，为了更加有效率，当可以预先知道字符串的大致长度范围的时候，最好使用reserve函数申请合适的空间长度，防止字符的不停<br>拷贝。<br>empty() 返回的是字符串是否为空，当然你可以使用size() &lt;= 0来判断，但是还是推荐使用这个函数。</p>
-</li>
-<li><p>element access</p>
-<blockquote>
-<p>char&amp; operator<a href="size_t pos"></a>;<br>const char&amp; operator<a href="size_t pos"></a>;<br>char&amp; at(size_t pos);<br>const char&amp; at(size_t pos) const;</p>
-</blockquote>
-<p>operator[] pos 小于length,不报异常。pos等于length时候，const 版本不报异常。其他情况均报异常。<br>　　 at 只要不在length范围内，就报异常。</p>
-</li>
-<li><p>modifers</p>
-<blockquote>
-<p>string&amp; operator+=(const string&amp; str);<br>string&amp; operator+=(const char&amp; c);<br>string&amp; operator+=(const char* s)</p>
-<p>string&amp; append(const string&amp; str);<br>string&amp; append(const string&amp; str, size_t npos, size_t sublen);<br>string&amp; append(const char<em> s);<br>　 &gt; string&amp; append(const char</em> s, size_t n);<br>string&amp; append(size_t n, char c);<br>template<typename inputiterator=""> string&amp; append(InputIterator first, InputIterator last);</typename></p>
-<p>string&amp; replace (size_t pos,  size_t len,  const string&amp; str);<br>string&amp; replace (iterator i1, iterator i2, const string&amp; str);<br>string&amp; replace (size_t pos,  size_t len,  const string&amp; str, size_t subpos, size_t sublen);<br>　 &gt; string&amp; replace (size_t pos,  size_t len,  const char<em> s);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s);<br>string&amp; replace (size_t pos,  size_t len,  const char<em> s, size_t n);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s, size_t n);<br>string&amp; replace (size_t pos,  size_t len,  size_t n, char c);<br>string&amp; replace (iterator i1, iterator i2, size_t n, char c);<br>template <class inputiterator=""> string&amp; replace (iterator i1, iterator i2, InputIterator first, InputIterator last);</class></p>
-<p>string&amp; erase (size_t pos = 0, size_t len = npos);<br>iterator erase (iterator p);<br>iterator erase (iterator first, iterator last);</p>
-<p>void swap (string&amp; str);</p>
-<p>string&amp; insert (size_t pos, const string&amp; str);<br>string&amp; insert (size_t pos, const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; insert (size_t pos, const char<em> s);<br>string&amp; insert (size_t pos, const char</em> s, size_t n);<br>string&amp; insert (size_t pos, size_t n, char c);<br>void insert (iterator p, size_t n, char c);<br>iterator insert (iterator p, char c);<br>template <class inputiterator=""> void insert (iterator p, InputIterator first, InputIterator last);</class></p>
-</blockquote>
-</li>
-<li><p>find相关的<br>　 &gt; size_t find (const string&amp; str, size_t pos = 0) const;</p>
-<blockquote>
-<p>size_t find (const char<em> s, size_t pos = 0) const;<br>size_t find (const char</em> s, size_t pos, size_t n) const;<br>size_t find (char c, size_t pos = 0) const;</p>
-</blockquote>
-</li>
-</ol>
+        <p>首先参考了 <a href="http://www.jianshu.com/p/858ecf233db9" target="_blank" rel="external">http://www.jianshu.com/p/858ecf233db9</a> 搭建了hexo<br>nodejs 的安装 是下载了源码， 然后参考 <a href="http://blog.csdn.net/awj3584/article/details/18401539" target="_blank" rel="external">http://blog.csdn.net/awj3584/article/details/18401539</a> 编译的<br>然后就是配置_config.yml里面， 原帖子中的有误？ 使用了如下配置成功<br>deploy:<br>type: git #部署类型, 本文使用Github<br>repo: <repo>  #部署的仓库的SSH<br>branch: master   #部署分支,一般使用master主分支<br>常用的hexo 命令<br>hexo init<br>hexo generate<br>hexo server 通过localhost查看<br>hexi deploy 挂载到github<br>都可以用类似于 hexo d这样简写的方式</repo></p>
+<p>首先简易说下caffe.cpp的使用方法</p>
+<p>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0<br>这是最简单的训练方法，其中-gpu 0 设定了device number, 如果不使用这个参数的话，程序会检查lenet_solver中是否指定mode 为 GPU，已经device num<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -snapshot examples/test/lenet_solver_iter_75.solverstate<br>这是接着上次的训练，比如因为其他内在外在的原因，其中snapshot的参数为保存的以前的训练状态，例如上式中iter_75就是训练到75的时候<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -weights examples/test/lenet_solver_iter_75.caffemodel<br>这是finetune的过程，其中.caffemodel是之前训练保存的参数。finetune真是好用，简单不到10次重复finetune就达到了我之前使用几万次迭代才能得到的结果</p>
+<p>./build/tools/caffe device_query -gpu 0<br>查询制定的gpu的参数。</p>
+<p>./build/tools/caffe test -model examples/test/lenet_train_test.prototxt -weights examples/test/lenet_solver_iter_75.caffemodel -gpu 0 -iterations 100<br>这是测试模型-model参数指的是神经网络模型的net参数 -weights 为训练出来的网络参数 -iterations为测试的迭代次数 默认为50</p>
+<p>./build/tools/caffe time -model examples/test/lenet_train_test.prototxt -iterations 20<br>分析网络模型前向和后向传播的时间</p>
+<p>简易分析源码<br>现在的tools里面有四个参数，由1也可以看到，包括train test decive_query test,当然可以自行添加，只需仿照上述四个参数的代码自行添加所需即可。<br>首先，定义函数指针，返回值为int，无参数输入。可以看到上述train test devie_query test 均为这样的函数。<br>typedef int (*BrewFunction)();<br>然后定义一个map，typedef map<caffe::string, brefunction=""> BrewMap; BrewMap g_brew_map,<br>之后就是</caffe::string,></p>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23</p>
+<p>#define RegisterBrewFunction(func) \<br>   namespace { \<br>    class <strong>Registerer_##func { \<br>        public: /<em> NOLINT </em>/ \
+         </strong>Registerer_##func() { \<br>         g_brew<em>map[#func] = &func; \<br>         } \<br>    }; \<br>    __Registerer</em>##func g<em>registerer</em>##func; \<br>   }</p>
+<p>static BrewFunction GetBrewFunction(const caffe::string&amp; name) {<br>  if (g_brew_map.count(name)) {<br>    return g_brew_map[name];<br>  } else {<br>    LOG(ERROR) &lt;&lt; “Available caffe actions:”;<br>    for (BrewMap::iterator it = g_brew_map.begin();<br>         it != g_brew<em>map.end(); ++it) {<br>      LOG(ERROR) &lt;&lt; “\t” &lt;&lt; it-&gt;first;<br>    }<br>    LOG(FATAL) &lt;&lt; “Unknown action: “ &lt;&lt; name;<br>    return NULL;  // not reachable, just to suppress old compiler warnings.<br>  }<br>其中##表示的是拼接两个字符串，#表示的是将其转换为字符串。如RegisterBrewFunction(time)的话 Registerer</em>##func会在编译前替换成Registerer_time，而<br>g_brew_map[#func] = &func;则会替换成g_brew_map[“time”] = &time; #@fun 会被替换为’fun’（这里没用到，嘻嘻）<br>在train中</p>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>if (FLAGS_gpu &lt; 0<br>    &amp;&amp; solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {<br>  FLAGS_gpu = solver_param.device_id();<br>}</p>
+<p>// Set device id and mode<br>if (FLAGS_gpu &gt;= 0) {<br>  LOG(INFO) &lt;&lt; “Use GPU with device ID “ &lt;&lt; FLAGS_gpu;<br>  Caffe::SetDevice(FLAGS_gpu);<br>  Caffe::set_mode(Caffe::GPU);<br>} else {<br>  LOG(INFO) &lt;&lt; “Use CPU.”;<br>  Caffe::set_mode(Caffe::CPU);<br>}<br>可以得知，如果在cmd端不指定-gpu的话，程序会去查询solver中是否制定了gpu mode以及device number。<br>其他部分代码差不多很显然易见了。有空再仔细分析吧。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="cio8j33cw000ccmxlsvc2g4zs" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/04/30/blog/" data-id="cioczn9h10004p9xll97xrrnc" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -196,7 +168,7 @@ gflags::SetUsageMessage(&quot;command line brew\n&quot;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/gflag_0412/" data-id="cio8j33cx000dcmxluozus0jq" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/04/30/gflag_0412/" data-id="cioczn9hf000gp9xl39d8xg8r" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -234,7 +206,7 @@ gflags::SetUsageMessage(&quot;command line brew\n&quot;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/debug_0412/" data-id="cio8j33cy000ecmxl5cxg8u54" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/04/30/debug_0412/" data-id="cioczn9hh000jp9xllunwwtif" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -244,9 +216,9 @@ gflags::SetUsageMessage(&quot;command line brew\n&quot;
 
 
   
-    <article id="post-gtest" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-advancedGoogleTest" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/gtest/" class="article-date">
+    <a href="/2016/04/30/advancedGoogleTest/" class="article-date">
   <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
 </a>
     
@@ -256,77 +228,16 @@ gflags::SetUsageMessage(&quot;command line brew\n&quot;
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>今儿来说说谷歌单元测试库gtest<br>（备不住估计还得继续说说gmock，虽然我几分钟前才知道gmock)</p>
-<p>这里有一系列博客说gtest，并且说的很好。（<a href="http://www.cnblogs.com/coderzh/archive/2009/04/06/1426755.html）" target="_blank" rel="external">http://www.cnblogs.com/coderzh/archive/2009/04/06/1426755.html）</a></p>
-<p>1 Basic concept<br>  使用gtest首先得学会写断言（Assertions)。<br>断言总是成对出现，会有EXPECT<em>*版，也会有ASSERT</em>*版，前者会产生nonfatal错误并且继续运行，而后者会产生fatal error并且中断<br>程序。下举一小例。<br>　　`<br>  ASSERT_EQ(alpha.size(), beta.size()) &lt;&lt; “the sizes of alpha and beta are not equal”；</p>
-<p>  for(int id=0; id!=n; ++id)<br>  {<br>    EXPECT_EQ(a[i], b[i]) &lt;&lt; “array a, b not equal at: “ &lt;&lt; id;<br>　　}<br>  `</p>
-<p>  以下是所有的断言</p>
-<blockquote>
-<p>ASSERT_TRUE EXPECT_TRUE ASSERT_FALSE EXPECT_FALSE(condidtion)<br>　　&gt; ASSERT_EQ EXPECT_EQ (a, b)<br>ASSERT_NE EXPECT_NE<br>ASSERT_GT EXPECT_GT<br>ASSERT_LT EXPECT_LT<br>ASSERT_GE EXPECT_GE<br>ASSERT_LE EXPECT_LE</p>
-</blockquote>
-<p>　 &gt; ASSERT_STREQ EXPECT_STREQ</p>
-<blockquote>
-<p>ASSERT_STRCASEEQ EXPECT_STRCASEEQ<br>ASSERT_STRNE EXPECT_STRNE<br>ASSERT_STRCASEEQ EXPECT_STRCASENE<br>  上述a, b 必须是可比较的，可以是build-in type，也可以是自己创建的类型（当然提供可比较的方法）<br>  ASSERT_EQ可以用来对指针进行操作，例如当对比连个c string时候，他比较的是两个指针是否指向的是内存中的同一位置，而不知比较他们的值，<br>因此要比较两个c string的值，最好使用ASSERT_STREQ，而比较两个string，使用ASSERT_EQ即可。<br>2016/02以前，如×_EQ(expected, actual)描述的，两个参数一般是前边是期望值，后面是真实值。现在已经完全等同对待了</p>
-</blockquote>
-<p>  注意NULL 和空字符串是不同的。</p>
+        <p>此为gtest的第二篇，来说一些高级技巧</p>
+<p>基本翻译自这里<a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md" target="_blank" rel="external">https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md</a></p>
 <ol>
-<li><p>Simple Tests<br>使用宏TEST()来创建测试，如下main.cpp<br>　　`<br>#include<iostream><br>#include<gtest gtest.h=""></gtest></iostream></p>
-<p>int fib(int a, int b)<br>{<br> if(a &lt; b)</p>
-<pre><code>return -1;
-</code></pre><p> if(a == b)</p>
-<pre><code>return 0;
-</code></pre><p> if(a &gt; b)</p>
-<pre><code>return 1;
-</code></pre><p>}</p>
-<p>TEST(fib, handleAll)<br>{<br> EXPECT_EQ(fib(1, 2), -1);<br> EXPECT_EQ(fib(1, 1), 0);<br> EXPECT_EQ(fib(2, 1), 1);<br>}</p>
-<p>int main(int argc, char** argv)<br>{<br> testing::InitGoogleTest(&amp;argc, argv);<br> return RUN_ALL_TESTS();<br>}<br>`<br>使用g++ -Wall main.cpp -lgtest -lpthread 即可生成可执行程序。（gtest 和pthread 的顺序一定不能错）<br>　　TEST(test_case_name, test_name) {<br>　　　… test body …<br>　　　　}<br>　　中test_case_name, test_name 均是为了输出测试结果时候使用，不要加上引号。</p>
-</li>
+<li>more Assertions</li>
 </ol>
-<p>3.Test Fixtures<br>  当我测试想测试自己写的类的时候，如果使用２中的步骤，那么我需要重复地创建类的对象并且做相应的初始化，这很繁琐。所幸gtest可让我们重复使用同一个<br>数据初始化。<br>　要完成这些，你需要首先实现一个类，这个类需要继承　::testing::Test, 然后在这个类中声明你需要的东西，如果有必要给这个类加上构造函数<br>或者在void SetUp()里面准备数据。注意这里的U是大写。以及相应的析构函数或者void TearDown()函数。</p>
-<p>　然后就可以仿照２中书写测试样例了，唯一区别的地方是这次使用的TEST_F(test_case_name, test_name)这个宏，并且这里的test_case_name一般得是<br>你的类名，<br>　如，我们这边有一个类实现的是队列<br>  <code>template &lt;typename E&gt; // E is the element type.
-   class Queue {
-    public:
-      Queue();
-      void Enqueue(const E&amp; element);
-      E* Dequeue(); // Returns NULL if the queue is empty.
-      size_t size() const;
-      ...
-   };</code><br>  然后定义FixtureTest<br> 　<code>class QueueTest : public ::test::Test
-  {
-     protected:
-        virtual void SetUp()
-        {
-           q0_.Enqueue(0);
-           q1_.Enqueue(1);
-          q2_.Enqueue(2);
-        }
-        //virtual void TearDown()
-        //{}
-    Queue&lt;int&gt; q0_;
-    Queue&lt;int&gt; q1_;
-    Queue&lt;int&gt; q2_;
-  }</code><br>　　然后就可以创建测试case了<br>　　`<br>   TEST_F(QueueTest, IsEmptyInitially) {<br>     EXPECT<em>EQ(0, q0</em>.size());<br>   }</p>
-<p>   TEST<em>F(QueueTest, DequeueWorks) {<br>     int* n = q0</em>.Dequeue();<br>     EXPECT_EQ(NULL, n);</p>
-<pre><code>n = q1_.Dequeue();
-ASSERT_TRUE(n != NULL);
-EXPECT_EQ(1, *n);
-EXPECT_EQ(0, q1_.size());
-delete n;
-
-n = q2_.Dequeue();
-ASSERT_TRUE(n != NULL);
-EXPECT_EQ(2, *n);
-EXPECT_EQ(1, q2_.size());
-delete n;
-</code></pre><p>   }<br>  `<br>  这里说明一下，首先gtest会创建一个QueueTest对象Q1来做第一个测试，然后TearDown,销毁这个对象。然后<br>再次创建一个QueueTest对象Q2来做第二个测试，然后继续TearDown，销毁．上述两个测试例子的顺序可以随意．</p>
-<p>需要注意的是<br>  1) #include<gtest gtest.h=""><br>  2) ::testing::InitGoogleTest(&amp;argc, argv);<br>  3) return RUN_ALL<em>TESTS(); //main函数必须这样返回<br>　　4) g++ main.cpp -lgtest -lpthread　//两个库的顺序一定不能搞错<br>  5) 如果在函数中使用这个，ASSERT</em>*() 只能用在返回值为void的函数中．</gtest></p>
-<p>想吐个槽，为啥感觉gtest gflag中argc argv　有时候带&amp;，有时候不带呢，很容易记混啊记混啊，虽然我知道去看相应的源码<br>就可以知道答案，但是懒得去仔细研究了，这些工具能先好好使用再说了．</p>
-<p>　　</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/gtest/" data-id="cio8j33cz000gcmxlls6oihu2" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/04/30/advancedGoogleTest/" data-id="cioczn9gy0002p9xlt4coirgu" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -354,7 +265,7 @@ delete n;
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/lablog/" data-id="cio8j33d0000icmxlt01bm3z3" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/04/30/lablog/" data-id="cioczn9hl000op9xlrnbu1v8x" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -364,9 +275,9 @@ delete n;
 
 
   
-    <article id="post-proto" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-plan" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/proto/" class="article-date">
+    <a href="/2016/04/30/plan/" class="article-date">
   <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
 </a>
     
@@ -376,227 +287,11 @@ delete n;
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>今天来说说protobuf，也是谷歌的开源项目，用起来非常好用。 并且所定义的数据结构可以在多种语言之间无差别共享<br>只要使用的是同一个proto文件，官方支持的语言包括c++ python java c# go，其他语言也可以找到相应的开源版本。</p>
-<h2 id="它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，如必须配合相应的proto文件才能看懂里面字段的含义。"><a href="#它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，如必须配合相应的proto文件才能看懂里面字段的含义。" class="headerlink" title="它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，如必须配合相应的proto文件才能看懂里面字段的含义。"></a>它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，如必须配合相应的proto文件才能看懂里面字段的含义。</h2><p>起一个文本文件foo.proto，写入下面的内容。定义一个message<br>  <code>Message SearchRequest
-  {
-     required string query = 1；
-     optional int32 page_number = 2;
-     optional int32 result_per_page = 3;
-  }</code></p>
-<p>  上述定义了一个message，包括三个字段 query page_number result_per_page,第一个是string类型<br>后两个是int32类型，也可以定义其他类型如enum，甚至嵌套定义message。值得注意的是类型前边的说明<br>required optional以及这里没有出现的repeated， required表明的是这个message在使用的时候必须初始化给定<br>内容的字段， optional表示的是这个字段可以出现0或者1次，repeated表示的是字段内容可以出现多次，会对应到<br>相应的数组，字段是有顺序的。<br>  等号后面的数字是message在编码的时候的顺序，越小相对使用的位数相对少（1-15 只用1byte就可以，16-2047使用<br>2byte），因此在编码的时候应该尽量把1-15留给相对使用频繁的字段。最大的编号是2^29-1,当然一般你用不了这么多。<br>除此之外，19000-19999你也不能用，他们被protobuf留用了。<br>  上述编码会遗留一个问题，就是我要尽量把序号考前的留给常用的字段，如果目前我们还没有这样的字段，可未来指不定就<br>有这样的字段呢？或者我们现在使用的字段在未来不使用了，可以删去了，这样在使用proto的时候，如果编号串了的话就会带<br>来不小的问题。因此protobuf提供了reserve的方法来缓解这种情况。如下面所示。<br>  <code>message Foo 
-  {
-    reserved 2, 15, 9 to 11;
-    reserved &quot;foo&quot;, &quot;bar&quot;;
-  }</code><br>protoc –proto_path=src –cpp_out=build/gen src/foo.proto<br>就可以生产两个文件foo.pb.cc foo.pb.h, 你所定义的类都在里面。</p>
-<p>如果你在文件头写上package foo.bar;你所定义的所有类都会出现在namespace foo::bar里面。</p>
-<p>上述message 会生成SearchRequest类，并且生成<br>  <code>Foo()；
-    ～Foo()；
-    Foo(const Foo&amp; other)；
-    Foo&amp; operator=(const Foo&amp; other)；
-    void Swap(Foo* other)；
-    const UnknownFieldSet&amp; unknown_fields() const；
-    UnknownFieldSet* mutable_unknown_fields()；</code><br>当出现嵌套的message时候如message Foo { message Bar { } }， protobuf编译器会生成两个类Foo 和 Foo_Bar，并且<br>在类Foo中typedef Foo_Bar Bar;并且在生成的文件中你可以Foo 和 Foo：：Bar来访问两个类。</p>
-<ol>
-<li>针对optional int32 foo_bar = 5;编译器也会生成static const int kFooBarFieldNumber = 5;</li>
-<li>针对optional 和 required字段，类型为int32 float，例如optional int32 foo = 1; required int32 foo = 1;<br>编译器会生成<br>bool has_foo() const; // 如果这个字段设定了，返回true<br>int32 foo() const;  //返回foo当前的值<br>void set_foo(int32 value)； //设定foo的值<br>void clear_foo()；//清空foo字段，其值返回default值，has_foo返回false。</li>
-<li><p>针对optional和required字段，类型为string bytes时候<br> optional string foo = 1;<br> required string foo = 1;<br> optional bytes foo = 1;<br> required bytes foo = 1;<br>会生成方法</p>
-<pre><code>bool has_foo() const；
-const string&amp; foo() const；
-void set_foo(const string&amp; value)；
-void set_foo(const char* value)；
-void set_foo(const char* value, int size)；
-string* mutable_foo()；
-void clear_foo()；
-void set_allocated_foo(string* value);
-string* release_foo();
-</code></pre></li>
-<li><p>而针对repeated字段 如repeated int32 foo = 1；</p>
-<pre><code>int foo_size() const；
-int32 foo(int index)；
-void set_foo(int index, int32 value)；
-void add_foo(int32 value)
-void clear_foo()
-</code></pre><p>当然string对象会比int对象多一些方法可以类比2和3。</p>
-</li>
-<li><p>parse 和　serialize<br>　　　 c++下<br>   bool SerializeToString(string* output) const<br>   bool ParseFromString(const string&amp; data);</p>
-<pre><code>bool SerializeToOstream(ostream* output)
-</code></pre><p>   bool ParseFromIstream(istream* input);</p>
-<p>  python下<br>   SerializeToString()<br> 　　ParseFromString(data)</p>
-</li>
-</ol>
-<hr>
-<p>生成了pb.h 和pb.cc后就可以在程序中使用了<br>如main.cpp 内容如下<br>    `</p>
-<pre><code>#include&lt;iostream&gt;
-#include&lt;string&gt;
-#include&lt;fstream&gt;
-#include&lt;foo.pb.h&gt;
-
-int main()
-{
-foo::bar::SearchRequest sr;
-sr.set_query(&quot;query_1&quot;);
-sr.set_page_number(10086);
-
-std::ofstream file;
-file.open(&quot;query.file&quot;);
-
-if(file.is_open())
-{
-    sr.SerializeToOstream(file);
-}
-else
-{
-    std::cout &lt;&lt; &quot;failed to open the file&quot; &lt;&lt; std::endl;
-}
-return 0;    
-}
-`
-</code></pre><p>g++ main.cpp foo.pb.cc -I <path_to foo.pb.h=""> -lpthread -lprotobuf</path_to></p>
-<p>sq的内容即可serial到query.file中，这个文件是二进制文件。</p>
-<p>可以在python或者c++或者java下parse这个文件。</p>
-<p>   <code>from　test_pb2 import *
-    sr = SearchRequest()
-    with open(&#39;query.file&#39;) as f:
-    sr.ParseFromString(f.read())
-    print sr.page_number
-    print sr.query</code></p>
-
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/proto/" data-id="cio8j33d1000jcmxln0isfe1p" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-iomanip" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/iomanip/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天来简单说一下iomanip的处理</p>
-<ol>
-<li>setw　和 setfill</li>
-</ol>
-<p>两者经常配合使用，setw用来指定输出到流的时候采用的是多少字符位置，默认右对齐,setfill来指定<br>流中其他位置用什么字符填充，默认字符是空格．<br>　<code>std::cout &lt;&lt; std::setw(5) &lt;&lt; setfill(&#39;#&#39;) &lt;&lt; 3 &lt;&lt; endl;
- //output ####3</code><br> ps 1)注意setfill()里面是单引号，当setw指定的宽度小于后面要输出到流的字符总长时候，设定的宽度会被忽略<br> ps 2)这里的流不仅仅只的是　cout ostringstream 等也是可以的．</p>
-<ol>
-<li>setprecision　fixed scientific</li>
-</ol>
-<p>设定输出到流的浮点数的保存方式<br>std::setprescision(5) //小数点后至多保存５位数字<br>std::fixed // 保存固定的位数<br>std::scientific //以科学计数法来保存浮点数</p>
-<p>  <code>const double PI = 3.14159;
-　　std::cout &lt;&lt; std::setprecision(4) &lt;&lt; PI &lt;&lt; std::endl;
-  // 1) 3.1416
-  std::cout &lt;&lt; std::setprecision(7) &lt;&lt; PI &lt;&lt; std::endl;
-  // 2) 3.14
-  std::cout &lt;&lt; std::setprecision(9) &lt;&lt; PI &lt;&lt; std::endl;
-  // 3) 3.14159
-  std::cout &lt;&lt; std::fixed &lt;&lt; std::endl;
-  std::cout &lt;&lt; std::setprecision(9) &lt;&lt; PI &lt;&lt; std::endl;
-  // 4) 3.141590000
-  std::cout &lt;&lt;</code></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/iomanip/" data-id="cio8j33d2000kcmxl3libkrrg" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-blog" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/blog/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>首先参考了 <a href="http://www.jianshu.com/p/858ecf233db9" target="_blank" rel="external">http://www.jianshu.com/p/858ecf233db9</a> 搭建了hexo<br>nodejs 的安装 是下载了源码， 然后参考 <a href="http://blog.csdn.net/awj3584/article/details/18401539" target="_blank" rel="external">http://blog.csdn.net/awj3584/article/details/18401539</a> 编译的<br>然后就是配置_config.yml里面， 原帖子中的有误？ 使用了如下配置成功<br>deploy:<br>type: git #部署类型, 本文使用Github<br>repo: <repo>  #部署的仓库的SSH<br>branch: master   #部署分支,一般使用master主分支<br>常用的hexo 命令<br>hexo init<br>hexo generate<br>hexo server 通过localhost查看<br>hexi deploy 挂载到github<br>都可以用类似于 hexo d这样简写的方式</repo></p>
-<p>首先简易说下caffe.cpp的使用方法</p>
-<p>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0<br>这是最简单的训练方法，其中-gpu 0 设定了device number, 如果不使用这个参数的话，程序会检查lenet_solver中是否指定mode 为 GPU，已经device num<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -snapshot examples/test/lenet_solver_iter_75.solverstate<br>这是接着上次的训练，比如因为其他内在外在的原因，其中snapshot的参数为保存的以前的训练状态，例如上式中iter_75就是训练到75的时候<br>./build/tools/caffe train -solver examples/test/lenet_solver.prototxt -gpu 0 -weights examples/test/lenet_solver_iter_75.caffemodel<br>这是finetune的过程，其中.caffemodel是之前训练保存的参数。finetune真是好用，简单不到10次重复finetune就达到了我之前使用几万次迭代才能得到的结果</p>
-<p>./build/tools/caffe device_query -gpu 0<br>查询制定的gpu的参数。</p>
-<p>./build/tools/caffe test -model examples/test/lenet_train_test.prototxt -weights examples/test/lenet_solver_iter_75.caffemodel -gpu 0 -iterations 100<br>这是测试模型-model参数指的是神经网络模型的net参数 -weights 为训练出来的网络参数 -iterations为测试的迭代次数 默认为50</p>
-<p>./build/tools/caffe time -model examples/test/lenet_train_test.prototxt -iterations 20<br>分析网络模型前向和后向传播的时间</p>
-<p>简易分析源码<br>现在的tools里面有四个参数，由1也可以看到，包括train test decive_query test,当然可以自行添加，只需仿照上述四个参数的代码自行添加所需即可。<br>首先，定义函数指针，返回值为int，无参数输入。可以看到上述train test devie_query test 均为这样的函数。<br>typedef int (*BrewFunction)();<br>然后定义一个map，typedef map<caffe::string, brefunction=""> BrewMap; BrewMap g_brew_map,<br>之后就是</caffe::string,></p>
-<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23</p>
-<p>#define RegisterBrewFunction(func) \<br>   namespace { \<br>    class <strong>Registerer_##func { \<br>        public: /<em> NOLINT </em>/ \
-         </strong>Registerer_##func() { \<br>         g_brew<em>map[#func] = &func; \<br>         } \<br>    }; \<br>    __Registerer</em>##func g<em>registerer</em>##func; \<br>   }</p>
-<p>static BrewFunction GetBrewFunction(const caffe::string&amp; name) {<br>  if (g_brew_map.count(name)) {<br>    return g_brew_map[name];<br>  } else {<br>    LOG(ERROR) &lt;&lt; “Available caffe actions:”;<br>    for (BrewMap::iterator it = g_brew_map.begin();<br>         it != g_brew<em>map.end(); ++it) {<br>      LOG(ERROR) &lt;&lt; “\t” &lt;&lt; it-&gt;first;<br>    }<br>    LOG(FATAL) &lt;&lt; “Unknown action: “ &lt;&lt; name;<br>    return NULL;  // not reachable, just to suppress old compiler warnings.<br>  }<br>其中##表示的是拼接两个字符串，#表示的是将其转换为字符串。如RegisterBrewFunction(time)的话 Registerer</em>##func会在编译前替换成Registerer_time，而<br>g_brew_map[#func] = &func;则会替换成g_brew_map[“time”] = &time; #@fun 会被替换为’fun’（这里没用到，嘻嘻）<br>在train中</p>
-<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>if (FLAGS_gpu &lt; 0<br>    &amp;&amp; solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU) {<br>  FLAGS_gpu = solver_param.device_id();<br>}</p>
-<p>// Set device id and mode<br>if (FLAGS_gpu &gt;= 0) {<br>  LOG(INFO) &lt;&lt; “Use GPU with device ID “ &lt;&lt; FLAGS_gpu;<br>  Caffe::SetDevice(FLAGS_gpu);<br>  Caffe::set_mode(Caffe::GPU);<br>} else {<br>  LOG(INFO) &lt;&lt; “Use CPU.”;<br>  Caffe::set_mode(Caffe::CPU);<br>}<br>可以得知，如果在cmd端不指定-gpu的话，程序会去查询solver中是否制定了gpu mode以及device number。<br>其他部分代码差不多很显然易见了。有空再仔细分析吧。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/blog/" data-id="cio8j33c70004cmxladah88lo" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-caffe_syncedMem" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/caffe_syncedMem/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天来说说caffe中的底层类SyncedMemory</p>
-<p>首先SyncedMemory是caffe的内存管理类，由他实现了cpu data和gpu data的同步。</p>
-<ol>
-<li><p>SyncedMemory的成员变量</p>
-<p><code>void* cpu_ptr_;
-void* gpu_ptr_;
-size_t size_;
-SyncedHead head_; //enum SyncedHead { UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED };
-bool own_cpu_data_;
-bool cpu_malloc_use_cuda_;
-bool own_gpu_data_;
-int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变量的具体含义，尤其需要注意的是own_[c,g]pu<em>data</em>,这两个变量标示的是<br>如果相对应的[c,g]pu<em>ptr</em>指向的数据是通过malloc等方式申请的话，其值为true，通过set_方法赋值时（与别的变量共享），其值为false<br>从而在变量销毁的时候不会将共享数据的数据释放掉。<br>cpu_malloc_use<em>cuda</em> 变量标示的是在申请cpu内存的时候是否使用的是cuda的相应方法，使用cuda的方法能够申请得到pinned memory,是的<br>在多卡进行训练时候，提高数据copy的效率使得large models on multi-gpu 更加稳定。</p>
-</li>
-<li><p>SyncedMemory的成员函数<br>private 成员函数,<br><code>void to_cpu();
- void to_gpu();</code><br>这俩函数是类内部函数，实现的是cpu和gpu数据的同步。值的注意的地方是在 在数据传输过程中，数据head_的更新。</p>
-<p>接口函数<br>`<br>const void<em> cpu_data();<br>void</em> mutable_cpu_data();<br>void set_cpu_data(void* data);</p>
-<p>const void<em> gpu_data();<br>void</em> mutable_gpu_data();<br>void set_gpu_data(void* data);</p>
-<p>size_t size();<br>SyncedHead head();<br>void async_gpu_push(const cudaStream_t&amp; stream);<br>`<br>很简易的接口，从名字就可以知道他们的作用。</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/caffe_syncedMem/" data-id="cio8j33cm0009cmxlig1k4gx5" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="cioczn9gk0000p9xly8wn6c7b" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -629,7 +324,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
   <div class="widget-wrap">
     <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
     </div>
   </div>
 
@@ -639,7 +334,7 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
   <div class="widget-wrap">
     <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a>
+      <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
     </div>
   </div>
 
@@ -661,23 +356,23 @@ int gpu_device_;</code><br>从名字就可以一目了然知道每个成员变�
       <ul>
         
           <li>
-            <a href="/2016/05/15/boost_array/">(no title)</a>
+            <a href="/2016/05/18/boost-function/">boost_function</a>
           </li>
         
           <li>
-            <a href="/2016/05/14/boost_0515/">boost_0515</a>
+            <a href="/2016/05/18/caffe-blob/">caffe_blob</a>
           </li>
         
           <li>
-            <a href="/2016/05/04/python-file-reading-writing/">python file reading writing</a>
+            <a href="/2016/05/18/protobuf/">protobuf</a>
           </li>
         
           <li>
-            <a href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
+            <a href="/2016/05/18/iomanip/">iomanip</a>
           </li>
         
           <li>
-            <a href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
+            <a href="/2016/05/18/caffe-syncedMem/">caffe_syncedMem</a>
           </li>
         
       </ul>

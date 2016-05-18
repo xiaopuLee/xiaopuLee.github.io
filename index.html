@@ -68,6 +68,254 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-boost-function" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/18/boost-function/" class="article-date">
+  <time datetime="2016-05-18T14:35:39.000Z" itemprop="datePublished">2016-05-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/18/boost-function/">boost_function</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今儿来说说boost 的 function</p>
+<h1 id="最简单的用法"><a href="#最简单的用法" class="headerlink" title="最简单的用法"></a>最简单的用法</h1><p>看代码<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;boost/function.hpp&gt;</span><br><span class="line">#include&lt;iostream&gt;</span><br><span class="line"> </span><br><span class="line">int fun(int a, int b)</span><br><span class="line">&#123;</span><br><span class="line">  	return a + b;</span><br><span class="line">&#125;</span><br><span class="line">double fund(double a, double b)</span><br><span class="line">&#123;</span><br><span class="line">  	return a － b;</span><br><span class="line">&#125;</span><br><span class="line">int fun2(int a, int b)</span><br><span class="line">&#123;</span><br><span class="line">  	return a - b;</span><br><span class="line">&#125;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">   	boost::function&lt;int (int, int)&gt; i_i_i;</span><br><span class="line">   	i_i_i = &amp;fun;</span><br><span class="line">   	std::cout &lt;&lt; fun(1, 2) &lt;&lt; &quot; &quot; &lt;&lt; i_i_i(1, 2) &lt;&lt; std::endl;</span><br><span class="line">   	// 1) 3 3</span><br><span class="line">    i_i_i = &amp;fund;</span><br><span class="line">   	std::cout &lt;&lt; fund(3.1, 4.1) &lt;&lt; &quot; &quot; &lt;&lt; i_i_i(3.1, 4.1) &lt;&lt; std::endl;</span><br><span class="line">   	// 2)7.2 7</span><br><span class="line">   	i_i_i = &amp;fun2;</span><br><span class="line">   	std::cout &lt;&lt; fun2(5, 6) &lt;&lt; &quot; &quot; &lt;&lt; i_i_i(5, 6) &lt;&lt;　std::endl;</span><br><span class="line">  	// 3) -1 -1</span><br><span class="line">   	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 从上述代码可以看出其实function<int (int,="" int)=""> 是定义了一种类型，<br>这种类型的对象可以执行一类返回值是int 并且有且具有两个int 参数的函数.</int></p>
+<p>从2)处的输出值可以推测，上面那句i_i_i=&amp;fund…….（留待继续探究）</p>
+<p>#跟类结合在一块儿时候</p>
+<p>　尤其注意要传类指针<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class X</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">    int foo(int x, int b)</span><br><span class="line">    &#123;</span><br><span class="line">        return a + b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">boost::function&lt;int (X*, int, int)&gt; f;</span><br><span class="line">f = &amp;X::foo;</span><br><span class="line">std::cout &lt;&lt; f(1, 2) &lt;&lt; std::endl;</span><br><span class="line">// 3</span><br></pre></td></tr></table></figure></p>
+<p>#跟bind函数一块儿起作用</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/18/boost-function/" data-id="cioczn9gz0003p9xl307skt1u" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/boost-function/">boost,function</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-caffe-blob" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/18/caffe-blob/" class="article-date">
+  <time datetime="2016-05-18T14:33:13.000Z" itemprop="datePublished">2016-05-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/18/caffe-blob/">caffe_blob</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/18/caffe-blob/" data-id="cioczn9hb000ap9xl5h1843at" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-protobuf" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/18/protobuf/" class="article-date">
+  <time datetime="2016-05-18T14:00:56.000Z" itemprop="datePublished">2016-05-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/18/protobuf/">protobuf</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来简单说下protobuf，也是谷歌的开源项目，用起来非常好用。 并且所定义的数据结构可以在多种语言之间无差别共享<br>只要使用的是同一个proto文件，官方支持的语言包括c++ python java c# go，其他语言也可以找到相应的开源版本。</p>
+<p>它的作用跟xml差不多，但比xml体积小，速度快。缺点也有，比如必须配合相应的proto文件才能看懂里面字段的含义。</p>
+<p>起一个文本文件foo.proto，写入下面的内容。定义一个message<br>　　　　<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Message SearchRequest</span><br><span class="line">&#123;</span><br><span class="line">   required string query = 1；</span><br><span class="line">   optional int32 page_number = 2;</span><br><span class="line">   optional int32 result_per_page = 3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>  上述定义了一个message，包括三个字段 query page_number result_per_page,第一个是string类型<br>后两个是int32类型，也可以定义其他类型如enum，甚至嵌套定义message。值得注意的是类型前边的说明<br>required optional以及这里没有出现的repeated， required表明的是这个message在使用的时候必须初始化给定<br>内容的字段， optional表示的是这个字段可以出现0或者1次，repeated表示的是字段内容可以出现多次，会对应到<br>相应的数组，字段是有顺序的。<br>  等号后面的数字是message在编码的时候的顺序，越小相对使用的位数相对少（1-15 只用1byte就可以，16-2047使用<br>2byte），因此在编码的时候应该尽量把1-15留给相对使用频繁的字段。最大的编号是2^29-1,当然一般你用不了这么多。<br>除此之外，19000-19999你也不能用，他们被protobuf留用了。<br>  上述编码会遗留一个问题，就是我要尽量把序号考前的留给常用的字段，如果目前我们还没有这样的字段，可未来指不定就<br>有这样的字段呢？或者我们现在使用的字段在未来不使用了，可以删去了，这样在使用proto的时候，如果编号串了的话就会带<br>来不小的问题。因此protobuf提供了reserve的方法来缓解这种情况。如下面所示。<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">message Foo </span><br><span class="line">&#123;</span><br><span class="line">  reserved 2, 15, 9 to 11;</span><br><span class="line">  reserved &quot;foo&quot;, &quot;bar&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>protoc –proto_path=src –cpp_out=build/gen src/foo.proto<br>就可以生产两个文件foo.pb.cc foo.pb.h, 你所定义的类都在里面。</p>
+<p>如果你在文件头写上package foo.bar;你所定义的所有类都会出现在namespace foo::bar里面。</p>
+<p>上述message 会生成SearchRequest类，并且生成<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Foo()；</span><br><span class="line">～Foo()；</span><br><span class="line">Foo(const Foo&amp; other)；</span><br><span class="line">Foo&amp; operator=(const Foo&amp; other)；</span><br><span class="line">void Swap(Foo* other)；</span><br><span class="line">const UnknownFieldSet&amp; unknown_fields() const；</span><br><span class="line">UnknownFieldSet* mutable_unknown_fields()；</span><br></pre></td></tr></table></figure></p>
+<p>当出现嵌套的message时候如message Foo { message Bar { } }， protobuf编译器会生成两个类Foo 和 Foo_Bar，并且<br>在类Foo中typedef Foo_Bar Bar;并且在生成的文件中你可以Foo 和 Foo：：Bar来访问两个类。</p>
+<ol>
+<li>针对optional int32 foo_bar = 5;编译器也会生成static const int kFooBarFieldNumber = 5;</li>
+<li>针对optional 和 required字段，类型为int32 float，例如optional int32 foo = 1; required int32 foo = 1;<br>编译器会生成<br>bool has_foo() const; // 如果这个字段设定了，返回true<br>int32 foo() const;  //返回foo当前的值<br>void set_foo(int32 value)； //设定foo的值<br>void clear_foo()；//清空foo字段，其值返回default值，has_foo返回false。</li>
+<li>针对optional和required字段，类型为string bytes时候 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">optional string foo = 1;</span><br><span class="line">required string foo = 1;</span><br><span class="line">optional bytes foo = 1;</span><br><span class="line">required bytes foo = 1;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>会生成方法<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">bool has_foo() const；</span><br><span class="line">const string&amp; foo() const；</span><br><span class="line">void set_foo(const string&amp; value)；</span><br><span class="line">void set_foo(const char* value)；</span><br><span class="line">void set_foo(const char* value, int size)；</span><br><span class="line">string* mutable_foo()；</span><br><span class="line">void clear_foo()；</span><br><span class="line">void set_allocated_foo(string* value);</span><br><span class="line">string* release_foo();</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li><p>而针对repeated字段 如repeated int32 foo = 1；</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int foo_size() const；</span><br><span class="line">int32 foo(int index)；</span><br><span class="line">void set_foo(int index, int32 value)；</span><br><span class="line">void add_foo(int32 value)</span><br><span class="line">void clear_foo()</span><br></pre></td></tr></table></figure>
+<p>当然string对象会比int对象多一些方法可以类比2和3。</p>
+</li>
+<li><p>parse 和　serialize<br>　　　 c++下</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bool SerializeToString(string* output) const</span><br><span class="line">bool ParseFromString(const string&amp; data);</span><br><span class="line">bool SerializeToOstream(ostream* output)</span><br><span class="line">bool ParseFromIstream(istream* input);</span><br></pre></td></tr></table></figure>
+<p>  python下</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SerializeToString()</span><br><span class="line">ParseFromString(data)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<p>生成了pb.h 和pb.cc后就可以在程序中使用了<br>如main.cpp 内容如下<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">   #include&lt;iostream&gt;</span><br><span class="line">   #include&lt;string&gt;</span><br><span class="line">   #include&lt;fstream&gt;</span><br><span class="line">   #include&lt;foo.pb.h&gt;</span><br><span class="line">   //</span><br><span class="line">   int main()</span><br><span class="line">   &#123;</span><br><span class="line">foo::bar::SearchRequest sr;</span><br><span class="line">sr.set_query(&quot;query_1&quot;);</span><br><span class="line">sr.set_page_number(10086);</span><br><span class="line"></span><br><span class="line">std::ofstream file;</span><br><span class="line">file.open(&quot;query.file&quot;);</span><br><span class="line"></span><br><span class="line">if(file.is_open())</span><br><span class="line">&#123;</span><br><span class="line">	sr.SerializeToOstream(file);</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;failed to open the file&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line">return 0;	</span><br><span class="line">　　　　&#125;</span><br></pre></td></tr></table></figure></p>
+<p>g++ main.cpp foo.pb.cc -I <path_to foo.pb.h=""> -lpthread -lprotobuf<br>sq的内容即可serial到query.file中，这个文件是二进制文件。<br>可以在python或者c++或者java下parse这个文件。<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">   from　test_pb2 import *</span><br><span class="line">   sr = SearchRequest()</span><br><span class="line">   with open(&apos;query.file&apos;) as f:</span><br><span class="line">sr.ParseFromString(f.read())</span><br><span class="line">print sr.page_number</span><br><span class="line">print sr.query</span><br></pre></td></tr></table></figure></path_to></p>
+<p>(python 代码插入有问题，真是醉了)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/18/protobuf/" data-id="cioczn9hm000rp9xl11o1uu8v" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-iomanip" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/18/iomanip/" class="article-date">
+  <time datetime="2016-05-18T13:55:23.000Z" itemprop="datePublished">2016-05-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/18/iomanip/">iomanip</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来简单说一下iomanip的处理</p>
+<p>#setw　和 setfill</p>
+<p>两者经常配合使用，setw用来指定输出到流的时候采用的是多少字符位置，默认右对齐,setfill来指定<br>流中其他位置用什么字符填充，默认字符是空格．<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">std::cout &lt;&lt; std::setw(5) &lt;&lt; setfill(&apos;#&apos;) &lt;&lt; 3 &lt;&lt; endl;</span><br><span class="line">//output ####3</span><br></pre></td></tr></table></figure></p>
+<p>ps 1)注意setfill()里面是单引号，当setw指定的宽度小于后面要输出到流的字符总长时候，设定的宽度会被忽略<br>ps 2)这里的流不仅仅只的是　cout ostringstream 等也是可以的．</p>
+<p>#setprecision　fixed scientific</p>
+<p>设定输出到流的浮点数的保存方式<br>std::setprescision(5) //小数点后至多保存５位数字?<br>std::fixed // 保存固定的位数<br>std::scientific //以科学计数法来保存浮点数<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">const double PI = 3.14159;</span><br><span class="line">std::cout &lt;&lt; std::setprecision(4) &lt;&lt; PI &lt;&lt; std::endl;</span><br><span class="line">// 1) 3.1416</span><br><span class="line">std::cout &lt;&lt; std::setprecision(7) &lt;&lt; PI &lt;&lt; std::endl;</span><br><span class="line">// 2) 3.14</span><br><span class="line">std::cout &lt;&lt; std::setprecision(9) &lt;&lt; PI &lt;&lt; std::endl;</span><br><span class="line">// 3) 3.14159</span><br><span class="line">std::cout &lt;&lt; std::fixed &lt;&lt; std::endl;</span><br><span class="line">std::cout &lt;&lt; std::setprecision(9) &lt;&lt; PI &lt;&lt; std::endl;</span><br><span class="line">// 4) 3.141590000</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/18/iomanip/" data-id="cioczn9hj000np9xl1x9novts" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-caffe-syncedMem" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/18/caffe-syncedMem/" class="article-date">
+  <time datetime="2016-05-18T13:44:51.000Z" itemprop="datePublished">2016-05-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/18/caffe-syncedMem/">caffe_syncedMem</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天来说说caffe中的底层类SyncedMemory</p>
+<p>首先SyncedMemory是caffe的内存管理类，由它实现了cpu data和gpu data的同步。</p>
+<ol>
+<li><p>SyncedMemory的成员变量</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">void* cpu_ptr_;</span><br><span class="line">void* gpu_ptr_;</span><br><span class="line">size_t size_;</span><br><span class="line">SyncedHead head_; //enum SyncedHead &#123; UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED &#125;;</span><br><span class="line">bool own_cpu_data_;</span><br><span class="line">bool cpu_malloc_use_cuda_;</span><br><span class="line">bool own_gpu_data_;</span><br><span class="line">int gpu_device_;</span><br></pre></td></tr></table></figure>
+<p>从名字就可以一目了然知道每个成员变量的具体含义，尤其需要注意的是own_[c,g]pu<em>data</em>,这两个变量标示的是<br>如果相对应的[c,g]pu<em>ptr</em>指向的数据是通过malloc等方式申请的话，其值为true，通过set_＊方法赋值时（与别的变量共享），其值为false<br>从而在变量销毁的时候不会将共享数据的数据释放掉。<br>cpu_malloc_use<em>cuda</em> 变量标示的是在申请cpu内存的时候是否使用的是cuda的相应方法，使用cuda的方法能够申请得到pinned memory,是的<br>在多卡进行训练时候，提高数据copy的效率使得large models on multi-gpu 更加稳定。</p>
+</li>
+<li><p>SyncedMemory的成员函数<br>private 成员函数,</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">void to_cpu();</span><br><span class="line">void to_gpu();</span><br></pre></td></tr></table></figure>
+<p>这俩函数是类内部函数，实现的是cpu和gpu数据的同步。值的注意的地方是在 在数据传输过程中，数据head_的更新。</p>
+<p>接口函数</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const void* cpu_data();</span><br><span class="line">void* mutable_cpu_data();</span><br><span class="line">void set_cpu_data(void* data);</span><br><span class="line">const void* gpu_data();</span><br><span class="line">void* mutable_gpu_data();</span><br><span class="line">void set_gpu_data(void* data);</span><br><span class="line">size_t size();</span><br><span class="line">SyncedHead head();</span><br><span class="line">void async_gpu_push(const cudaStream_t&amp; stream);</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>很简易的接口，从名字就可以知道他们的作用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/18/caffe-syncedMem/" data-id="cioczn9hc000bp9xl3ssj0awy" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-boost_array" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/05/15/boost_array/" class="article-date">
@@ -92,7 +340,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/15/boost_array/" data-id="cio8j33c70005cmxl9nzna141" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/05/15/boost_array/" data-id="cioczn9ha0008p9xlkqlinh8w" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -135,43 +383,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="cio8j33ca0006cmxlow3femri" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-python-file-reading-writing" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/04/python-file-reading-writing/" class="article-date">
-  <time datetime="2016-05-04T13:12:24.000Z" itemprop="datePublished">2016-05-04</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/04/python-file-reading-writing/">python file reading writing</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/04/python-file-reading-writing/" data-id="cio8j33d3000lcmxlpnb71qbz" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/05/14/boost_0515/" data-id="cioczn9h70006p9xllaflhwfc" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -227,73 +439,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="cio8j33ck0008cmxlj3tb0o3w" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/05/03/data_transformer/" data-id="cioczn9he000ep9xlsj1wbr2k" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-source-posts-data-transformer-md" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/03/source-posts-data-transformer-md/" class="article-date">
-  <time datetime="2016-05-03T13:04:40.000Z" itemprop="datePublished">2016-05-03</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/03/source-posts-data-transformer-md/" data-id="cio8j33d4000mcmxld0k2c38l" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-caffe_blob" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/caffe_blob/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/caffe_blob/" data-id="cio8j33bu0000cmxln56c4bo0" class="article-share-link">Partager</a>
-      
-      
     </footer>
   </div>
   
@@ -333,7 +483,7 @@ const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/blas/" data-id="cio8j33c40002cmxlu4dx94hi" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/04/30/blas/" data-id="cioczn9gx0001p9xltp179mij" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -343,9 +493,9 @@ const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c
 
 
   
-    <article id="post-boost_function" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-cplusplus.string" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2016/04/30/boost_function/" class="article-date">
+    <a href="/2016/04/30/cplusplus.string/" class="article-date">
   <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
 </a>
     
@@ -355,93 +505,52 @@ const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>今儿来说说boost 的 function</p>
-<p>1 最简单的用法<br> 看代码<br> `</p>
-<p> #include<boost function.hpp=""></boost></p>
-<p> #include<iostream></iostream></p>
-<p> int fun(int a, int b)<br> {<br>    return a + b;<br> }<br> double fund(double a, double b)<br> {<br>    return a － b;<br> }<br> int fun2(int a, int b)<br> {<br>    return a - b;<br> }</p>
-<p> int main()<br> {<br>   boost::function<int (int,="" int)=""> i_i_i;<br>   i_i_i = &fun;<br>   std::cout &lt;&lt; fun(1, 2) &lt;&lt; “ “<br>     &lt;&lt; i_i_i(1, 2) &lt;&lt; std::endl;<br>   // 1) 3 3<br>　　　i_i_i = &fund;<br>   std::cout &lt;&lt; fund(3.1, 4.1) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(3.1, 4.1) &lt;&lt; std::endl;<br>   // 2)7.2 7<br>   i_i_i = &fun2;<br>   std::cout &lt;&lt; fun2(5, 6) &lt;&lt; “ “<br>    &lt;&lt; i_i_i(5, 6) &lt;&lt;　std::endl;<br>   // 3) -1 -1<br>   return 0;<br> }<br> `<br> 从上述代码可以看出其实function<int (int,="" int)=""> 是定义了一种类型，<br>这种类型的对象可以执行一类返回值是int 并且有且具有两个int 参数的函数.</int></int></p>
-<p>从2)处的输出值可以推测，上面那句i_i_i=&amp;fund…….（留待继续探究）</p>
+        <p>今天友人来访，应邀写一个段程序处理数据，其中设计到字符串的操作（split find）<br>然后发觉自己对这一块儿蛮生疏，查阅cplusplus,总结如下。</p>
+<p>string是std的一个类.typedef basic_string<char> string;</char></p>
 <ol>
-<li>跟类结合在一块儿时候</li>
-</ol>
-<p>　尤其注意要传类指针<br> <code>class X
- {
-    public:
-    int foo(int x, int b)
-        {
-           return a + b;
-        }
- }
- boost::function&lt;int (X*, int, int)&gt; f;
- f = &amp;X::foo;
- std::cout &lt;&lt; f(1, 2) &lt;&lt; std::endl;
- // 3</code></p>
-<ol>
-<li>跟bind函数一块儿起作用</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/boost_function/" data-id="cio8j33cj0007cmxlgcojri1j" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-advancedGoogleTest" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/advancedGoogleTest/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>此为gtest的第二篇，来说一些高级技巧</p>
-<p>基本翻译自这里<a href="https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md" target="_blank" rel="external">https://github.com/google/googletest/blob/master/googletest/docs/AdvancedGuide.md</a></p>
-<ol>
-<li>more Assertions</li>
+<li><p>构造函数，copy构造函数，assign</p>
+<blockquote>
+<p>string() ; //empty string<br>string(const string&amp; str); //copy<br>　　&gt; string(const string&amp; str, size_t pos, size_t len = npos);<br>string(const char<em> s)<br>string(const char</em> s, size_t n)<br>string(size_t n, char c);<br>template<class inputiterator=""> string(InputIterator first, InputIterator last) //[first, last)</class></p>
+<p>string&amp; operator=(const string&amp; str);<br>string&amp; operator=(const char* s);<br>string&amp; operator=(char c)</p>
+<p>string&amp; assign(const string&amp; str);<br>string&amp; assign(const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; assign(const char<em> s)<br>string&amp; assign(const char</em> s, size_t n)<br>string&amp; assign(size_t n, char c)<br>template<class inputiterator=""> string assign&amp;(InputIterator first, InputIterator last);</class></p>
+</blockquote>
+</li>
+<li><p>size相关的<br>　　&gt; size_t size() const;</p>
+<blockquote>
+<p>size_t length() const;<br>size_t capacity() const;<br>size_t max_size() const;</p>
+<p>void reserve(size_t size = 0);</p>
+<p>bool empty();</p>
+<p>void clear();</p>
+</blockquote>
+<p>size() 和　length()都返回的是字符串的大小，但更推荐用前者。capacity() 返回的是为当前字符串申请的空间的大小，这个<br>大小是以byte来记，并且这个大小不小于字符串的长度。max_size()返回的是字符串能申请到的最大长度。因为字符串可以动态改变大小<br>所以，为了更加有效率，当可以预先知道字符串的大致长度范围的时候，最好使用reserve函数申请合适的空间长度，防止字符的不停<br>拷贝。<br>empty() 返回的是字符串是否为空，当然你可以使用size() &lt;= 0来判断，但是还是推荐使用这个函数。</p>
+</li>
+<li><p>element access</p>
+<blockquote>
+<p>char&amp; operator<a href="size_t pos"></a>;<br>const char&amp; operator<a href="size_t pos"></a>;<br>char&amp; at(size_t pos);<br>const char&amp; at(size_t pos) const;</p>
+</blockquote>
+<p>operator[] pos 小于length,不报异常。pos等于length时候，const 版本不报异常。其他情况均报异常。<br>　　 at 只要不在length范围内，就报异常。</p>
+</li>
+<li><p>modifers</p>
+<blockquote>
+<p>string&amp; operator+=(const string&amp; str);<br>string&amp; operator+=(const char&amp; c);<br>string&amp; operator+=(const char* s)</p>
+<p>string&amp; append(const string&amp; str);<br>string&amp; append(const string&amp; str, size_t npos, size_t sublen);<br>string&amp; append(const char<em> s);<br>　 &gt; string&amp; append(const char</em> s, size_t n);<br>string&amp; append(size_t n, char c);<br>template<typename inputiterator=""> string&amp; append(InputIterator first, InputIterator last);</typename></p>
+<p>string&amp; replace (size_t pos,  size_t len,  const string&amp; str);<br>string&amp; replace (iterator i1, iterator i2, const string&amp; str);<br>string&amp; replace (size_t pos,  size_t len,  const string&amp; str, size_t subpos, size_t sublen);<br>　 &gt; string&amp; replace (size_t pos,  size_t len,  const char<em> s);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s);<br>string&amp; replace (size_t pos,  size_t len,  const char<em> s, size_t n);<br>string&amp; replace (iterator i1, iterator i2, const char</em> s, size_t n);<br>string&amp; replace (size_t pos,  size_t len,  size_t n, char c);<br>string&amp; replace (iterator i1, iterator i2, size_t n, char c);<br>template <class inputiterator=""> string&amp; replace (iterator i1, iterator i2, InputIterator first, InputIterator last);</class></p>
+<p>string&amp; erase (size_t pos = 0, size_t len = npos);<br>iterator erase (iterator p);<br>iterator erase (iterator first, iterator last);</p>
+<p>void swap (string&amp; str);</p>
+<p>string&amp; insert (size_t pos, const string&amp; str);<br>string&amp; insert (size_t pos, const string&amp; str, size_t subpos, size_t sublen);<br>string&amp; insert (size_t pos, const char<em> s);<br>string&amp; insert (size_t pos, const char</em> s, size_t n);<br>string&amp; insert (size_t pos, size_t n, char c);<br>void insert (iterator p, size_t n, char c);<br>iterator insert (iterator p, char c);<br>template <class inputiterator=""> void insert (iterator p, InputIterator first, InputIterator last);</class></p>
+</blockquote>
+</li>
+<li><p>find相关的<br>　 &gt; size_t find (const string&amp; str, size_t pos = 0) const;</p>
+<blockquote>
+<p>size_t find (const char<em> s, size_t pos = 0) const;<br>size_t find (const char</em> s, size_t pos, size_t n) const;<br>size_t find (char c, size_t pos = 0) const;</p>
+</blockquote>
+</li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/advancedGoogleTest/" data-id="cio8j33c60003cmxlwmpfiava" class="article-share-link">Partager</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-plan" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/30/plan/" class="article-date">
-  <time datetime="2016-04-30T15:13:37.400Z" itemprop="datePublished">2016-04-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/30/plan/" data-id="cio8j33c30001cmxlm4l7z96j" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/04/30/cplusplus.string/" data-id="cioczn9hd000dp9xldu8xndub" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -474,7 +583,7 @@ const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c
   <div class="widget-wrap">
     <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-data-transformer/">caffe data_transformer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
     </div>
   </div>
 
@@ -484,7 +593,7 @@ const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c
   <div class="widget-wrap">
     <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a>
+      <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-data-transformer/" style="font-size: 10px;">caffe data_transformer</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
     </div>
   </div>
 
@@ -506,23 +615,23 @@ const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c
       <ul>
         
           <li>
-            <a href="/2016/05/15/boost_array/">(no title)</a>
+            <a href="/2016/05/18/boost-function/">boost_function</a>
           </li>
         
           <li>
-            <a href="/2016/05/14/boost_0515/">boost_0515</a>
+            <a href="/2016/05/18/caffe-blob/">caffe_blob</a>
           </li>
         
           <li>
-            <a href="/2016/05/04/python-file-reading-writing/">python file reading writing</a>
+            <a href="/2016/05/18/protobuf/">protobuf</a>
           </li>
         
           <li>
-            <a href="/2016/05/03/data_transformer/">caffe 源码阅读之data_transformer</a>
+            <a href="/2016/05/18/iomanip/">iomanip</a>
           </li>
         
           <li>
-            <a href="/2016/05/03/source-posts-data-transformer-md/">source/_posts/data_transformer.md</a>
+            <a href="/2016/05/18/caffe-syncedMem/">caffe_syncedMem</a>
           </li>
         
       </ul>
