@@ -15,7 +15,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
 <meta property="og:description" content="缘起１经常使用python童鞋对这样的语句对这样的语句不会感到陌生，如a, b, c = sys.argv[1:]意思是将程序的三个输入的参数分别赋给a, b, c.(a, b) = fun()是将函数fun的两个返回值分别赋给a, b(a, b) = (b, a)是交换a, b 的值
 python这里能完成这么多类似的功能的原因是python的数据结构tuple
 缘起2在c++中，有时候我们写的">
-<meta property="og:updated_time" content="2016-05-19T16:10:47.019Z">
+<meta property="og:updated_time" content="2016-05-19T16:14:17.199Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="boost_tuple">
 <meta name="twitter:description" content="缘起１经常使用python童鞋对这样的语句对这样的语句不会感到陌生，如a, b, c = sys.argv[1:]意思是将程序的三个输入的参数分别赋给a, b, c.(a, b) = fun()是将函数fun的两个返回值分别赋给a, b(a, b) = (b, a)是交换a, b 的值
@@ -62,9 +62,9 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -98,7 +98,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
         <h2 id="缘起１"><a href="#缘起１" class="headerlink" title="缘起１"></a>缘起１</h2><p>经常使用python童鞋对这样的语句对这样的语句不会感到陌生，如<br><code>a, b, c = sys.argv[1:]</code><br>意思是将程序的三个输入的参数分别赋给a, b, c.<br><code>(a, b) = fun()</code><br>是将函数fun的两个返回值分别赋给a, b<br><code>(a, b) = (b, a)</code><br>是交换a, b 的值</p>
 <p>python这里能完成这么多类似的功能的原因是python的数据结构tuple</p>
 <h2 id="缘起2"><a href="#缘起2" class="headerlink" title="缘起2"></a>缘起2</h2><p>在c++中，有时候我们写的函数的返回值有多个的时候，我们可以有好几种处理方法，<br>比如如果返回值的类型全部相同，那我们大可以将他们全push到一个vector里面<br>或者如下使用引用或者指针的方法　将要返回的值通过参数的形式传递进去<br><code>void fun(int a, int&amp; p)</code><br>甚至于我们可以自己实现一个类或者使用已有的类(如pair)来保存所有的返回值.<br>可是平心而论，这里所说的处理方式多有不变．我们多么希望能有类似于python tuple那样的<br>数据结构啊</p>
-<p>然后,boost带来了tuple<br>为了使用tuple,需要包含头文件 boost\/tuple\/tuple.hpp,<br>tuple是pair的泛化,最多可以将10中类型不尽相同的数据压制在一起<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class T0, ..., class T9&gt;</span><br><span class="line">class tuple</span><br><span class="line">&#123;</span><br><span class="line">    tuple();</span><br><span class="line">    tuple(T0 t0, ...);</span><br><span class="line">    tuple(const tupe&lt;...&gt;&amp; );</span><br><span class="line">    tuple&amp; operator=(const tuple&amp;);</span><br><span class="line">    tuple&amp; operator=(cosnt std::pair&amp;);</span><br><span class="line">     </span><br><span class="line">    template&lt;int N&gt; T get();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>然后,boost带来了tuple<br>为了使用tuple,需要包含头文件 boost\/tuple\/tuple.hpp,<br>tuple是pair的泛化,最多可以将10中类型不尽相同的数据压制在一起<br><code>template&lt;class T0, ..., class T9&gt;</code><br><code>class tuple</code><br><code>{</code><br><code>tuple();</code><br><code>tuple(T0 t0, ...);</code><br><code>tuple(const tupe&lt;...&gt;&amp; );</code><br><code>tuple&amp; operator=(const tuple&amp;);</code><br><code>tuple&amp; operator=(cosnt std::pair&amp;);</code><br><code>template&lt;int N&gt; T get();</code><br><code>};</code></p>
 <p>tuple也支持嵌套定义如<br><code>typedef tuple&lt;int, int&gt; TP1;</code><br><code>typedef tuple&lt;int, TP1&gt; TP2;</code></p>
 <p>除了通过各种构造函数生成tuple, tuple类库提供类似于make_pair()的函数make_tuple(),如<br><code>make_tuple(string(), vector&lt;int&gt;()); //tuple&lt;string, vector&lt;int&gt; &gt;</code><br>make_tuple生产的数据默认是无引用,如果要使用引用,则要用到ref库的ref()和cref()</p>
 <p>可以通过t.get<id>()来获取tuple t第id个分量,然而这里的id必须是编译器就要知道的值,如下面代码不能work<br><code>for(int id=0; id!=3; ++id)</code><br><code>{</code><br>    <code>std::cout &lt;&lt; t.get&lt;id&gt;();</code><br><code>}</code><br>类似与此,boost还提供了一个get&lt;&gt;()函数访问tuple的分量,如<br><code>get&lt;1&gt;(t)</code></id></p>
@@ -111,7 +111,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/19/boost-tuple/" data-id="cioehtz950001nzxlixuz04be" class="article-share-link">Partager</a>
+      <a data-url="http://yoursite.com/2016/05/19/boost-tuple/" data-id="cioehzgqo00045ixlbzng07pi" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/boost-tuple/">boost, tuple</a></li></ul>
@@ -124,7 +124,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
   
   
     <a href="/2016/05/18/gflag/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">gflag</div>
     </a>
   
@@ -139,7 +139,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/boost/">boost</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/google/">google</a></li></ul>
     </div>
@@ -149,7 +149,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-tuple/">boost, tuple</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-array/">boost,array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-noncopyable-typof-assign/">boost,noncopyable,typof,assign</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
     </div>
@@ -159,7 +159,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
       <a href="/tags/boost-tuple/" style="font-size: 10px;">boost, tuple</a> <a href="/tags/boost-array/" style="font-size: 10px;">boost,array</a> <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/boost-noncopyable-typof-assign/" style="font-size: 10px;">boost,noncopyable,typof,assign</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
     </div>
@@ -178,7 +178,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
         
@@ -215,7 +215,7 @@ python这里能完成这么多类似的功能的原因是python的数据结构tu
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2016 sharpL<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
