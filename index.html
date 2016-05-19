@@ -55,9 +55,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
@@ -67,6 +67,56 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-boost-tuple" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/19/boost-tuple/" class="article-date">
+  <time datetime="2016-05-19T15:12:29.000Z" itemprop="datePublished">2016-05-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/19/boost-tuple/">boost_tuple</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="缘起１"><a href="#缘起１" class="headerlink" title="缘起１"></a>缘起１</h2><p>经常使用python童鞋对这样的语句对这样的语句不会感到陌生，如<br><code>a, b, c = sys.argv[1:]</code><br>意思是将程序的三个输入的参数分别赋给a, b, c.<br><code>(a, b) = fun()</code><br>是将函数fun的两个返回值分别赋给a, b<br><code>(a, b) = (b, a)</code><br>是交换a, b 的值</p>
+<p>python这里能完成这么多类似的功能的原因是python的数据结构tuple</p>
+<h2 id="缘起2"><a href="#缘起2" class="headerlink" title="缘起2"></a>缘起2</h2><p>在c++中，有时候我们写的函数的返回值有多个的时候，我们可以有好几种处理方法，<br>比如如果返回值的类型全部相同，那我们大可以将他们全push到一个vector里面<br>或者如下使用引用或者指针的方法　将要返回的值通过参数的形式传递进去<br><code>void fun(int a, int&amp; p)</code><br>甚至于我们可以自己实现一个类或者使用已有的类(如pair)来保存所有的返回值.<br>可是平心而论，这里所说的处理方式多有不变．我们多么希望能有类似于python tuple那样的<br>数据结构啊</p>
+<p>然后,boost带来了tuple<br>为了使用tuple,需要包含头文件 boost\/tuple\/tuple.hpp,<br>tuple是pair的泛化,最多可以将10中类型不尽相同的数据压制在一起<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class T0, ..., class T9&gt;</span><br><span class="line">class tuple</span><br><span class="line">&#123;</span><br><span class="line">    tuple();</span><br><span class="line">    tuple(T0 t0, ...);</span><br><span class="line">    tuple(const tupe&lt;...&gt;&amp; );</span><br><span class="line">    tuple&amp; operator=(const tuple&amp;);</span><br><span class="line">    tuple&amp; operator=(cosnt std::pair&amp;);</span><br><span class="line">     </span><br><span class="line">    template&lt;int N&gt; T get();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>tuple也支持嵌套定义如<br><code>typedef tuple&lt;int, int&gt; TP1;</code><br><code>typedef tuple&lt;int, TP1&gt; TP2;</code></p>
+<p>除了通过各种构造函数生成tuple, tuple类库提供类似于make_pair()的函数make_tuple(),如<br><code>make_tuple(string(), vector&lt;int&gt;()); //tuple&lt;string, vector&lt;int&gt; &gt;</code><br>make_tuple生产的数据默认是无引用,如果要使用引用,则要用到ref库的ref()和cref()</p>
+<p>可以通过t.get<id>()来获取tuple t第id个分量,然而这里的id必须是编译器就要知道的值,如下面代码不能work<br><code>for(int id=0; id!=3; ++id)</code><br><code>{</code><br>    <code>std::cout &lt;&lt; t.get&lt;id&gt;();</code><br><code>}</code><br>类似与此,boost还提供了一个get&lt;&gt;()函数访问tuple的分量,如<br><code>get&lt;1&gt;(t)</code></id></p>
+<p>如果tuple的元素能够执行比较操作的话,tuple也可以进行比较.跟pair的比较方法类似,如果要使用比较<br>需要包含头文件boost\/tuple\/tuple_comparation.hpp</p>
+<p>tuple也支持输出到流,类似于比较操作,tuple输出到流时候只不过是将tuple的元素逐个用operator&lt;&lt; 或者operator&gt;&gt;.<br>要使用输出功能,需要包含头文件boost\/tuple\/tuple_io.hpp,如<br><code>tuple&lt;int, double, string&gt; t1(1, 2.2, &quot;hello&quot;);</code><br><code>cout &lt;&lt; t1 &lt;&lt; endl;</code><br><code>cin &gt;&gt; t1;</code></p>
+<p>这样屏幕会输出(1 2 hello),并且等待新的输入<br>这里需要注意的是使用cmd输入流的时候,需要包含前导符,后导符,以及分隔符,并且后导符跟最后一个tuple分量之间<br>要用空格隔开.前导符倒不需要<br>可以使用方法 set_open(char) set_close(char) set_delimiter(char) 来设置这三种符号</p>
+<p>最后,boost tuple提供了一个函数tie(),使得boost 的tuple表现离python的tuple更近一步,如<br><code>int i; double d; char c;</code><br><code>tie(i, d, c) = fun();</code><br>tie应用与std::pair也是可以的<br><code>tie(i, s) = make_pair(100, &quot;string&quot;);</code><br>如果并不想使用tuple的某个分量,那么可以使用tuples::ignore来占位,<br><code>tie(tuples::ignore, s) = make_pair(100, &quot;hellp&quot;);</code></p>
+<p>那么如何像在python中那样优雅地交换两个tuple分量的值呢?<br><code>tie(a, b) = make_tuple(b, a); //work</code><br><code>tie(a, b) = tie(b, a); //actually not work</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/19/boost-tuple/" data-id="cioehtz950001nzxlixuz04be" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/boost-tuple/">boost, tuple</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-gflag" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -113,7 +163,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/gflag/" data-id="ciod1u00k000hwoxlvwz1ojcs" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/gflag/" data-id="cioehtz9x000lnzxl0jbrts7t" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li></ul>
@@ -163,7 +213,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/debug/" data-id="ciod1u00h000dwoxlkc7xk6ke" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/debug/" data-id="cioehtz9w000jnzxl75aurj3z" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gdb/">gdb</a></li></ul>
@@ -202,7 +252,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/blog-1/" data-id="ciod1tzzx0000woxlfxhb742z" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/blog-1/" data-id="cioehtz990004nzxlupmmj0qe" class="article-share-link">Partager</a>
       
       
     </footer>
@@ -259,7 +309,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/blas-1/" data-id="ciod1u0010001woxlljik02qv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/blas-1/" data-id="cioehtz910000nzxl8z0j0mlz" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li></ul>
@@ -308,7 +358,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/boost-function/" data-id="ciod1u0030002woxl4paw9ntl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/boost-function/" data-id="cioehtz9n0009nzxl8ouqel0d" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/boost-function/">boost,function</a></li></ul>
@@ -346,7 +396,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/caffe-blob/" data-id="ciod1u00a0008woxlbh3b3x6j" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/caffe-blob/" data-id="cioehtz9s000enzxltvow5k19" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li></ul>
@@ -418,7 +468,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/protobuf/" data-id="ciod1u00m000nwoxl1ee65bux" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/protobuf/" data-id="cioehtza0000snzxl3qu00cbo" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
@@ -466,7 +516,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/iomanip/" data-id="ciod1u00l000jwoxl221x5vw9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/iomanip/" data-id="cioehtz9z000qnzxl9v10b6uh" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li></ul>
@@ -523,58 +573,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/caffe-syncedMem/" data-id="ciod1u00d000bwoxlgp9fqpx7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/05/18/caffe-syncedMem/" data-id="cioehtz9t000gnzxlcurx197p" class="article-share-link">Partager</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-boost_array" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/15/boost_array/" class="article-date">
-  <time datetime="2016-05-15T10:16:37.000Z" itemprop="datePublished">2016-05-15</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/boost/">boost</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/05/15/boost_array/">boost_array</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#boost array</p>
-<p>头文件是　boost/array.hpp</p>
-<p>简单来说一下相对于stl的容器，boost又添加的短小精悍的容器,如array<br>array 是模板类，可以使用　<br><code>boost::array&lt;int, 10&gt; arr;</code><br>来声明一个元素类型为int，包含10个元素的数组．<br>array没什么特别的地方，就是将c中的数组给封装起来了，提供了迭代器这样的东西，无他．</p>
-<p>一起来看一下array的成员函数</p>
-<p><code>iterator begin();</code><br><code>iterator end()</code><br><code>reference operator[](size_type i);</code><br><code>reference at(size_type i)</code><br><code>reference front()</code><br><code>reference back()</code><br><code>static size_type size()</code><br><code>static bool empty()</code><br><code>static bool max_size()</code><br><code>T* data()</code><br><code>T* c_array()</code><br><code>void swap(array&lt;T, N&gt;&amp; y)</code><br><code>void assign(const T&amp; value);</code><br><code>void fill(const T&amp; value);</code></p>
-<p>跟vector的接口大致一样，fill assign都是将value填充数组<br>array 可以使用boost assign里面的list_of来初始化<br><code>boost::array&lt;int, 10&gt; arr;</code><br><code>arr = list_of(1)(2)(3)(4)(5)(6)(7)(8)(9)(10);</code><br>但不能用push_back insert 等其他方法来更新值．</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/15/boost_array/" data-id="ciod1u0090006woxlla2jg1g9" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/boost-array/">boost,array</a></li></ul>
 
     </footer>
   </div>
@@ -594,7 +596,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/boost/">boost</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/google/">google</a></li></ul>
     </div>
@@ -604,9 +606,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-array/">boost,array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-noncopyable-typof-assign/">boost,noncopyable,typof,assign</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-tuple/">boost, tuple</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-array/">boost,array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-noncopyable-typof-assign/">boost,noncopyable,typof,assign</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
     </div>
   </div>
 
@@ -614,9 +616,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/tags/boost-array/" style="font-size: 10px;">boost,array</a> <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/boost-noncopyable-typof-assign/" style="font-size: 10px;">boost,noncopyable,typof,assign</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
+      <a href="/tags/boost-tuple/" style="font-size: 10px;">boost, tuple</a> <a href="/tags/boost-array/" style="font-size: 10px;">boost,array</a> <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/boost-noncopyable-typof-assign/" style="font-size: 10px;">boost,noncopyable,typof,assign</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
     </div>
   </div>
 
@@ -633,9 +635,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/05/19/boost-tuple/">boost_tuple</a>
+          </li>
         
           <li>
             <a href="/2016/05/18/gflag/">gflag</a>
@@ -653,10 +659,6 @@
             <a href="/2016/05/18/blas-1/">blas</a>
           </li>
         
-          <li>
-            <a href="/2016/05/18/boost-function/">boost_function</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -670,7 +672,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2016 sharpL<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

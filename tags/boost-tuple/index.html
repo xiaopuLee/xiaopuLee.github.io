@@ -3,24 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>blas | sharp&#39;s blog</title>
+  <title>Mot-clé: boost, tuple | sharp&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
-blas以及他的各种衍生包的安装舍去不表。
-blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
-<meta property="og:type" content="article">
-<meta property="og:title" content="blas">
-<meta property="og:url" content="http://yoursite.com/2016/05/18/blas-1/index.html">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="sharp's blog">
+<meta property="og:url" content="http://yoursite.com/tags/boost-tuple/index.html">
 <meta property="og:site_name" content="sharp's blog">
-<meta property="og:description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
-blas以及他的各种衍生包的安装舍去不表。
-blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
-<meta property="og:updated_time" content="2016-05-18T15:43:43.065Z">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="blas">
-<meta name="twitter:description" content="近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。
-blas以及他的各种衍生包的安装舍去不表。
-blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。因此按照维度的增加，blas将运算分为三">
+<meta name="twitter:title" content="sharp's blog">
+<meta name="twitter:description">
   
     <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
   
@@ -73,83 +66,39 @@ blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-blas-1" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/05/18/blas-1/" class="article-date">
-  <time datetime="2016-05-18T15:13:03.000Z" itemprop="datePublished">2016-05-18</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/caffe/">caffe</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+        <section id="main">
   
-    <h1 class="article-title" itemprop="name">
-      blas
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2016" class="archive-year">2016</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2016/05/19/boost-tuple/" class="archive-article-date">
+  <time datetime="2016-05-19T15:12:29.000Z" itemprop="datePublished">May 19</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/05/19/boost-tuple/">boost_tuple</a>
     </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p> 近来在使用caffe实现gru unit时候需要书写梯度反向传播的部分代码，而总是弄混caffe中关于gemm的部分代码<br>因此需要将blas彻底弄清楚，才不会浪费更多的时间，是以记之。</p>
-<p>blas以及他的各种衍生包的安装舍去不表。</p>
-<p>blas 是 Basic Linear Algebra Subprograms的简写，主要进行的是矩阵运算（向量也算特殊的矩阵）。<br>因此按照维度的增加，blas将运算分为三个level</p>
-<ul>
-<li>向量与向量的运算</li>
-<li>矩阵和向量的运算</li>
-<li>矩阵和矩阵的运算</li>
-</ul>
-<p>（由于太多，现在只了解用到部分，其余部分随用随添加）</p>
-<ol>
-<li>level1 向量向量运算<br> cblas_?asum  ？可取s, d, sc, dz 作用是Sum of vector magnitudes  （参数）</li>
-<li>level2 矩阵向量运算</li>
-<li><p>level3 矩阵矩阵运算<br> cblas_?gemm  ？ 可取s, d, c, z 用作一般矩阵的乘法</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">void cblas_？gemm (const CBLAS_LAYOUT Layout, const CBLAS_TRANSPOSE transa, const CBLAS_TRANSPOSE transb, </span><br><span class="line">            const MKL_INT m, const MKL_INT n, const MKL_INT k, const float alpha, const float *a, </span><br><span class="line">            const MKL_INT lda, const float *b, const MKL_INT ldb, const float beta, float *c, const MKL_INT ldc);</span><br><span class="line">C := alpha*op(A)*op(B) + beta*C,</span><br></pre></td></tr></table></figure>
-<p> alpha beta都是scalar A,B,C是矩阵 A（m×k） B（kxn） C（mxn）<br> 如果transa=CblasNoTrans, op(A) = A， transa=CblasTrans, then op(A) = AT，transa=CblasConjTrans, then op(A) = AH.<br> m 指定的是op（A）以及C的行， n指定的是op(B)和C的列， k是op（A）的列和op（B）<br> lda 之类指定的是相应向量的leading demension 比如rowmajor下，transa=CblasNoTrans，lda&gt;=max(1, k)</p>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/05/18/blas-1/" data-id="cioehtz910000nzxl8z0j0mlz" class="article-share-link">Partager</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li></ul>
-
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2016/05/18/blog-1/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
-      <div class="article-nav-title">
-        
-          blog
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2016/05/18/boost-function/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
-      <div class="article-nav-title">boost_function</div>
-    </a>
-  
-</nav>
-
-  
 </article>
+  
+  
+    </div></section>
+  
 
 </section>
         

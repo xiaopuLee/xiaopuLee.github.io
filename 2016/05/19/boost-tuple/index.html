@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>boost_tuple | sharp&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="缘起１经常使用python童鞋对这样的语句对这样的语句不会感到陌生，如a, b, c = sys.argv[1:]意思是将程序的三个输入的参数分别赋给a, b, c.(a, b) = fun()是将函数fun的两个返回值分别赋给a, b(a, b) = (b, a)是交换a, b 的值
+python这里能完成这么多类似的功能的原因是python的数据结构tuple
+缘起2在c++中，有时候我们写的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="boost_tuple">
+<meta property="og:url" content="http://yoursite.com/2016/05/19/boost-tuple/index.html">
+<meta property="og:site_name" content="sharp's blog">
+<meta property="og:description" content="缘起１经常使用python童鞋对这样的语句对这样的语句不会感到陌生，如a, b, c = sys.argv[1:]意思是将程序的三个输入的参数分别赋给a, b, c.(a, b) = fun()是将函数fun的两个返回值分别赋给a, b(a, b) = (b, a)是交换a, b 的值
+python这里能完成这么多类似的功能的原因是python的数据结构tuple
+缘起2在c++中，有时候我们写的">
+<meta property="og:updated_time" content="2016-05-19T16:10:47.019Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="boost_tuple">
+<meta name="twitter:description" content="缘起１经常使用python童鞋对这样的语句对这样的语句不会感到陌生，如a, b, c = sys.argv[1:]意思是将程序的三个输入的参数分别赋给a, b, c.(a, b) = fun()是将函数fun的两个返回值分别赋给a, b(a, b) = (b, a)是交换a, b 的值
+python这里能完成这么多类似的功能的原因是python的数据结构tuple
+缘起2在c++中，有时候我们写的">
+  
+    <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sharp&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">my life since 2015.12.19</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-boost-tuple" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/19/boost-tuple/" class="article-date">
+  <time datetime="2016-05-19T15:12:29.000Z" itemprop="datePublished">2016-05-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      boost_tuple
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="缘起１"><a href="#缘起１" class="headerlink" title="缘起１"></a>缘起１</h2><p>经常使用python童鞋对这样的语句对这样的语句不会感到陌生，如<br><code>a, b, c = sys.argv[1:]</code><br>意思是将程序的三个输入的参数分别赋给a, b, c.<br><code>(a, b) = fun()</code><br>是将函数fun的两个返回值分别赋给a, b<br><code>(a, b) = (b, a)</code><br>是交换a, b 的值</p>
+<p>python这里能完成这么多类似的功能的原因是python的数据结构tuple</p>
+<h2 id="缘起2"><a href="#缘起2" class="headerlink" title="缘起2"></a>缘起2</h2><p>在c++中，有时候我们写的函数的返回值有多个的时候，我们可以有好几种处理方法，<br>比如如果返回值的类型全部相同，那我们大可以将他们全push到一个vector里面<br>或者如下使用引用或者指针的方法　将要返回的值通过参数的形式传递进去<br><code>void fun(int a, int&amp; p)</code><br>甚至于我们可以自己实现一个类或者使用已有的类(如pair)来保存所有的返回值.<br>可是平心而论，这里所说的处理方式多有不变．我们多么希望能有类似于python tuple那样的<br>数据结构啊</p>
+<p>然后,boost带来了tuple<br>为了使用tuple,需要包含头文件 boost\/tuple\/tuple.hpp,<br>tuple是pair的泛化,最多可以将10中类型不尽相同的数据压制在一起<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">template&lt;class T0, ..., class T9&gt;</span><br><span class="line">class tuple</span><br><span class="line">&#123;</span><br><span class="line">    tuple();</span><br><span class="line">    tuple(T0 t0, ...);</span><br><span class="line">    tuple(const tupe&lt;...&gt;&amp; );</span><br><span class="line">    tuple&amp; operator=(const tuple&amp;);</span><br><span class="line">    tuple&amp; operator=(cosnt std::pair&amp;);</span><br><span class="line">     </span><br><span class="line">    template&lt;int N&gt; T get();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>tuple也支持嵌套定义如<br><code>typedef tuple&lt;int, int&gt; TP1;</code><br><code>typedef tuple&lt;int, TP1&gt; TP2;</code></p>
+<p>除了通过各种构造函数生成tuple, tuple类库提供类似于make_pair()的函数make_tuple(),如<br><code>make_tuple(string(), vector&lt;int&gt;()); //tuple&lt;string, vector&lt;int&gt; &gt;</code><br>make_tuple生产的数据默认是无引用,如果要使用引用,则要用到ref库的ref()和cref()</p>
+<p>可以通过t.get<id>()来获取tuple t第id个分量,然而这里的id必须是编译器就要知道的值,如下面代码不能work<br><code>for(int id=0; id!=3; ++id)</code><br><code>{</code><br>    <code>std::cout &lt;&lt; t.get&lt;id&gt;();</code><br><code>}</code><br>类似与此,boost还提供了一个get&lt;&gt;()函数访问tuple的分量,如<br><code>get&lt;1&gt;(t)</code></id></p>
+<p>如果tuple的元素能够执行比较操作的话,tuple也可以进行比较.跟pair的比较方法类似,如果要使用比较<br>需要包含头文件boost\/tuple\/tuple_comparation.hpp</p>
+<p>tuple也支持输出到流,类似于比较操作,tuple输出到流时候只不过是将tuple的元素逐个用operator&lt;&lt; 或者operator&gt;&gt;.<br>要使用输出功能,需要包含头文件boost\/tuple\/tuple_io.hpp,如<br><code>tuple&lt;int, double, string&gt; t1(1, 2.2, &quot;hello&quot;);</code><br><code>cout &lt;&lt; t1 &lt;&lt; endl;</code><br><code>cin &gt;&gt; t1;</code></p>
+<p>这样屏幕会输出(1 2 hello),并且等待新的输入<br>这里需要注意的是使用cmd输入流的时候,需要包含前导符,后导符,以及分隔符,并且后导符跟最后一个tuple分量之间<br>要用空格隔开.前导符倒不需要<br>可以使用方法 set_open(char) set_close(char) set_delimiter(char) 来设置这三种符号</p>
+<p>最后,boost tuple提供了一个函数tie(),使得boost 的tuple表现离python的tuple更近一步,如<br><code>int i; double d; char c;</code><br><code>tie(i, d, c) = fun();</code><br>tie应用与std::pair也是可以的<br><code>tie(i, s) = make_pair(100, &quot;string&quot;);</code><br>如果并不想使用tuple的某个分量,那么可以使用tuples::ignore来占位,<br><code>tie(tuples::ignore, s) = make_pair(100, &quot;hellp&quot;);</code></p>
+<p>那么如何像在python中那样优雅地交换两个tuple分量的值呢?<br><code>tie(a, b) = make_tuple(b, a); //work</code><br><code>tie(a, b) = tie(b, a); //actually not work</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/19/boost-tuple/" data-id="cioehtz950001nzxlixuz04be" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/boost-tuple/">boost, tuple</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/05/18/gflag/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">gflag</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/boost/">boost</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/google/">google</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-tuple/">boost, tuple</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-array/">boost,array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-noncopyable-typof-assign/">boost,noncopyable,typof,assign</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/boost-tuple/" style="font-size: 10px;">boost, tuple</a> <a href="/tags/boost-array/" style="font-size: 10px;">boost,array</a> <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/boost-noncopyable-typof-assign/" style="font-size: 10px;">boost,noncopyable,typof,assign</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/19/boost-tuple/">boost_tuple</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/gflag/">gflag</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/debug/">debug</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/blog-1/">blog</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/blas-1/">blas</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 sharpL<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
