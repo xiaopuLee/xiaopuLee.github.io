@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>adadelta | sharp&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天读了一篇paper, AdaDelta, an adaptive learning rate method,是Zeiler在google实习时候所做.这篇paper试图解决的问题在于,当使用sgd的时候我们并不能及时地调整learning rate(以下简称lr),使得lr相对于理想中的最佳lr即不偏大,也不偏下,因为偏大的话,就有可能使得结果发散,偏小的话会使得收敛变得缓慢.因此作者试图找到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="adadelta">
+<meta property="og:url" content="http://yoursite.com/2016/06/07/adadelta/index.html">
+<meta property="og:site_name" content="sharp's blog">
+<meta property="og:description" content="今天读了一篇paper, AdaDelta, an adaptive learning rate method,是Zeiler在google实习时候所做.这篇paper试图解决的问题在于,当使用sgd的时候我们并不能及时地调整learning rate(以下简称lr),使得lr相对于理想中的最佳lr即不偏大,也不偏下,因为偏大的话,就有可能使得结果发散,偏小的话会使得收敛变得缓慢.因此作者试图找到">
+<meta property="og:updated_time" content="2016-06-07T13:47:41.761Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="adadelta">
+<meta name="twitter:description" content="今天读了一篇paper, AdaDelta, an adaptive learning rate method,是Zeiler在google实习时候所做.这篇paper试图解决的问题在于,当使用sgd的时候我们并不能及时地调整learning rate(以下简称lr),使得lr相对于理想中的最佳lr即不偏大,也不偏下,因为偏大的话,就有可能使得结果发散,偏小的话会使得收敛变得缓慢.因此作者试图找到">
+  
+    <link rel="alternate" href="/atom.xml" title="sharp&#39;s blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">sharp&#39;s blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">my life since 2015.12.19</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-adadelta" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/07/adadelta/" class="article-date">
+  <time datetime="2016-06-07T12:56:43.000Z" itemprop="datePublished">2016-06-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      adadelta
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天读了一篇paper, AdaDelta, an adaptive learning rate method,是Zeiler在google实习时候所做.<br>这篇paper试图解决的问题在于,当使用sgd的时候我们并不能及时地调整learning rate(以下简称lr),使得lr<br>相对于理想中的最佳lr即不偏大,也不偏下,因为偏大的话,就有可能使得结果发散,偏小的话会使得收敛变得缓慢.<br>因此作者试图找到一种方法使得lr能够自适应地更新.</p>
+<p>我们知道sgd使用的是一介梯度信息,而牛顿法则还需要二阶信息,也即需要计算hessian矩阵的逆矩阵.这个逆矩阵<br>不好求,因此出现了一些列求他近似的方法,本文也是一种这样的方法.</p>
+<p>该方法的优点是</p>
+<ol>
+<li>不用手动调整lr</li>
+<li>对超参数不敏感</li>
+<li>参数的每个维度都可以有自己的特定lr</li>
+<li>相较于sgd,计算量并没有增加多少</li>
+<li>对与大梯度,噪声以及不同的模型选择具有鲁棒的特性</li>
+</ol>
+<p>具体来说,相对于sgd<br>delta(x) = -lr <em> grad<br>adadelta 采用的是<br>delta(x) = -(RMS(delta(x)))/ RMS(grad) </em> grad<br>其中RMS(y) = sqrt(ACC(y) ^ 2 + epsilon)<br>而ACC是相应量的的累加和, epsilon是为了保证做分母的时候整体不为0</p>
+<p>整体的计算过程为, 维护两个累加和,关于grad一个,关于最终更新的变量的一个<br>(1) 首先计算梯度grad, 然后计算 ACC(grad^2) = row <em> ACC(grad ^ 2) + (1-row) </em> grad ^ 2<br>(2) 计算两个RMS,并且计算delta(X)<br>(3) 计算ACC(deltaX ^ 2) = row <em> ACC(deltaX^2) </em> (1-row) * deltaX ^2<br>(3) 依据deltaX,更新X</p>
+<p>需要注意的是第二步中两个RMS的计算,由于本次的deltaX此时并没有计算出来,使用的是此步以前的deltaX.以下是caffe中关于这个的实现.</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">// compute square of gradient in update</span><br><span class="line">caffe_powx(net_params[param_id]-&gt;count(),</span><br><span class="line">    net_params[param_id]-&gt;cpu_diff(), Dtype(2),</span><br><span class="line">    this-&gt;update_[param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">// update history of gradients</span><br><span class="line">caffe_cpu_axpby(net_params[param_id]-&gt;count(), Dtype(1) - momentum,</span><br><span class="line">    this-&gt;update_[param_id]-&gt;cpu_data(), momentum,</span><br><span class="line">    this-&gt;history_[param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">// add delta to history to guard against dividing by zero later</span><br><span class="line">caffe_set(net_params[param_id]-&gt;count(), delta,</span><br><span class="line">    this-&gt;temp_[param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">caffe_add(net_params[param_id]-&gt;count(),</span><br><span class="line">    this-&gt;temp_[param_id]-&gt;cpu_data(),</span><br><span class="line">    this-&gt;history_[update_history_offset + param_id]-&gt;cpu_data(),</span><br><span class="line">    this-&gt;update_[param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">caffe_add(net_params[param_id]-&gt;count(),</span><br><span class="line">    this-&gt;temp_[param_id]-&gt;cpu_data(),</span><br><span class="line">    this-&gt;history_[param_id]-&gt;cpu_data(),</span><br><span class="line">    this-&gt;temp_[param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">// divide history of updates by history of gradients</span><br><span class="line">caffe_div(net_params[param_id]-&gt;count(),</span><br><span class="line">    this-&gt;update_[param_id]-&gt;cpu_data(),</span><br><span class="line">    this-&gt;temp_[param_id]-&gt;cpu_data(),</span><br><span class="line">    this-&gt;update_[param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">// jointly compute the RMS of both for update and gradient history</span><br><span class="line">caffe_powx(net_params[param_id]-&gt;count(),</span><br><span class="line">    this-&gt;update_[param_id]-&gt;cpu_data(), Dtype(0.5),</span><br><span class="line">    this-&gt;update_[param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">// compute the update</span><br><span class="line">caffe_mul(net_params[param_id]-&gt;count(),</span><br><span class="line">    net_params[param_id]-&gt;cpu_diff(),</span><br><span class="line">    this-&gt;update_[param_id]-&gt;cpu_data(),</span><br><span class="line">    net_params[param_id]-&gt;mutable_cpu_diff());</span><br><span class="line"></span><br><span class="line">// compute square of update</span><br><span class="line">caffe_powx(net_params[param_id]-&gt;count(),</span><br><span class="line">    net_params[param_id]-&gt;cpu_diff(), Dtype(2),</span><br><span class="line">    this-&gt;update_[param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">// update history of updates</span><br><span class="line">caffe_cpu_axpby(net_params[param_id]-&gt;count(), Dtype(1) - momentum,</span><br><span class="line">    this-&gt;update_[param_id]-&gt;cpu_data(), momentum,</span><br><span class="line">    this-&gt;history_[update_history_offset + param_id]-&gt;mutable_cpu_data());</span><br><span class="line"></span><br><span class="line">// apply learning rate</span><br><span class="line">caffe_cpu_scale(net_params[param_id]-&gt;count(), local_rate,</span><br><span class="line">    net_params[param_id]-&gt;cpu_diff(),</span><br><span class="line">    net_params[param_id]-&gt;mutable_cpu_diff());</span><br></pre></td></tr></table></figure>
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/06/07/adadelta/" data-id="cip5i22yv0000kqxl8vricttf" class="article-share-link">Partager</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/adadelta-caffe-deep-learning/">adadelta, caffe, deep learning</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/05/19/boost-tuple/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">boost_tuple</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/boost/">boost</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/google/">google</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/adadelta-caffe-deep-learning/">adadelta, caffe, deep learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-tuple/">boost, tuple</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-array/">boost,array</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-function/">boost,function</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/boost-noncopyable-typof-assign/">boost,noncopyable,typof,assign</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-iomanip/">c++,iomanip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-syncedMem/">caffe, syncedMem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blas/">caffe,blas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-blob/">caffe,blob</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-gflag-google/">caffe,gflag,google</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gdb/">gdb</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/protobuf-google/">protobuf,google</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/adadelta-caffe-deep-learning/" style="font-size: 10px;">adadelta, caffe, deep learning</a> <a href="/tags/boost-tuple/" style="font-size: 10px;">boost, tuple</a> <a href="/tags/boost-array/" style="font-size: 10px;">boost,array</a> <a href="/tags/boost-function/" style="font-size: 10px;">boost,function</a> <a href="/tags/boost-noncopyable-typof-assign/" style="font-size: 10px;">boost,noncopyable,typof,assign</a> <a href="/tags/c-iomanip/" style="font-size: 10px;">c++,iomanip</a> <a href="/tags/caffe-syncedMem/" style="font-size: 10px;">caffe, syncedMem</a> <a href="/tags/caffe-blas/" style="font-size: 10px;">caffe,blas</a> <a href="/tags/caffe-blob/" style="font-size: 10px;">caffe,blob</a> <a href="/tags/caffe-gflag-google/" style="font-size: 10px;">caffe,gflag,google</a> <a href="/tags/gdb/" style="font-size: 10px;">gdb</a> <a href="/tags/protobuf-google/" style="font-size: 10px;">protobuf,google</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/06/07/adadelta/">adadelta</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/19/boost-tuple/">boost_tuple</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/gflag/">gflag</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/debug/">debug</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/18/blog-1/">blog</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 sharpL<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
